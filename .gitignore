@@ -1,0 +1,5 @@
+node_modules
+yatikekun.sqlite
+.idea
+src/config/development.json
+/src/config/development.json
