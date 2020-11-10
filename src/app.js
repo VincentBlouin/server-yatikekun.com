@@ -22,7 +22,7 @@ app.use(bodyParser.urlencoded({extended: false}))
 require('./passport')
 
 const routes = require('./routes/index')
-app.use('/', routes)
+app.use('/api', routes)
 
 app.get('/status', (req, res) => {
   res.send({
@@ -43,7 +43,7 @@ const port = config.getConfig().port || 4105
 sequelize.sync()
   .then(() => {
     server.listen(port, function () {
-      console.log('Nutrition app listening on environment', app.get('env'))
+      console.log('Sel de mer app listening on environment', app.get('env'))
     })
   })
 

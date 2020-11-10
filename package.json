@@ -26,6 +26,10 @@
     "sqlite3": "^5.0.0",
     "pg": "^8.3.3",
     "pg-hstore": "^2.3.3",
-    "bluebird": "^3.7.2"
+    "bluebird": "^3.7.2",
+    "sprintf-js": "^1.1.2",
+    "@sendgrid/mail": "^7.4.0",
+    "nodemailer": "^6.4.15",
+    "nodemailer-mock-transport": "^1.3.0"
   }
 }

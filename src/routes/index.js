@@ -23,7 +23,7 @@ const isAdmin = require('../policy/isAdmin')
 // )
 
 router.post(
-    '/api/login',
+    '/login',
     AuthenticationController.login
 )
 
