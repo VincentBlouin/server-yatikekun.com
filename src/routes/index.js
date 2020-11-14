@@ -8,7 +8,7 @@ const AuthenticationControllerPolicy = require('../policy/AuthenticationControll
 //
 // const TransactionController = require('../controller/TransactionController')
 //
-// const ProductController = require('../controller/ProductController')
+const OfferController = require('../controller/OfferController')
 
 const isAuthenticated = require('../policy/isAuthenticated')
 // const isOwnerOrAdmin = require('../policy/isOwnerOrAdmin')
@@ -47,4 +47,20 @@ router.post(
     AuthenticationController.changePassword
 )
 
+router.get(
+    '/offer',
+    isAuthenticated,
+    OfferController.list
+)
+
+router.post(
+    '/offer/image',
+    isAuthenticated,
+    OfferController.uploadImage
+)
+
+router.get(
+    '/offer/image/:uuid',
+    OfferController.getImage
+)
 module.exports = router

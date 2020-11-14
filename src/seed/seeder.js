@@ -4,10 +4,12 @@ const Promise = require('bluebird');
 
 const {
     sequelize,
-    Users
+    Users,
+    Offers
 } = require('../model')
 
 const users = require('./Users.json')
+const offers = require('./Offers.json')
 
 module.exports = {
     run: function () {
@@ -16,6 +18,12 @@ module.exports = {
                 return Promise.all(
                     users.map(user => {
                         return Users.create(user)
+                    })
+                )
+            }).then(() => {
+                return Promise.all(
+                    offers.map(offer => {
+                        return Offers.create(offer)
                     })
                 )
             }).catch(function (err) {

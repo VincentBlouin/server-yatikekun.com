@@ -8,18 +8,18 @@
   },
   {
     "email": "u@sel.org",
-    "firstname": "Entry",
-    "lastname": "One",
+    "firstname": "Bob",
+    "lastname": "Heureux",
     "password": "12345678",
-    "status": "dataEntry",
+    "status": "member",
     "locale": "fr"
   },
   {
     "email": "u2@sel.org",
-    "firstname": "Entry",
-    "lastname": "Two",
+    "firstname": "Hug",
+    "lastname": "Belette",
     "password": "12345678",
-    "status": "dataEntry",
+    "status": "member",
     "locale": "fr"
   }
 ]
