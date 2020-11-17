@@ -1,6 +1,6 @@
 const {Offers} = require('../model')
 const {Users} = require('../model')
-const IMAGE_WIDTH = 500
+const IMAGE_WIDTH = 300
 const config = require('../config')
 const uuid = require('uuid')
 const fs = require('fs')
@@ -84,7 +84,7 @@ module.exports = {
         let offer = req.body
         offer = await Offers.create({
             title_fr: offer.description,
-            image: offer.image ? offer.image.file : null,
+            image: offer.image ? offer.image.name : null,
             customImage: offer.customImage,
             UserId: offer.UserId
         });
