@@ -20,8 +20,11 @@ module.exports = {
         return Offers.findAll({
             include: [{
                 model: Users,
-                attributes: ['firstname', 'lastname']
-            }]
+                attributes: ['firstname', 'lastname'],
+            }],
+            order: [
+                ['createdAt', 'DESC']
+            ]
         }).then((offers) => {
             res.send(offers);
         })

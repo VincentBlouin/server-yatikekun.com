@@ -773,12 +773,12 @@
   },
   {
     "title_fr": "Gardiennage de chien",
-    "image": "guitar.svg",
+    "image": "chien.svg",
     "UserId": "3"
   },
   {
     "title_fr": "J'arrange votre jardin et peux arroser vos plante si besoin",
-    "image": "guitar.svg",
+    "image": "plante.svg",
     "UserId": "3"
   },
   {
@@ -788,42 +788,42 @@
   },
   {
     "title_fr": "Coloration de cheveux",
-    "image": "guitar.svg",
+    "image": "ciseaux.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Je me propose pour aider lors des animations et les spectacles",
-    "image": "guitar.svg",
+    "image": "micro.svg",
     "UserId": "3"
   },
   {
     "title_fr": "problème de rouille sur ta wéture call moé",
-    "image": "guitar.svg",
+    "image": "char.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Aménagement de spot de chasse (chevreuil, ours, orignal)",
-    "image": "guitar.svg",
+    "image": "chien.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Capture de castor",
-    "image": "guitar.svg",
+    "image": "chien.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Initiation à l'aquaponie",
-    "image": "guitar.svg",
+    "image": "chien.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Conseils en herboristerie",
-    "image": "guitar.svg",
+    "image": "plante.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Conseil et aide en graphisme",
-    "image": "guitar.svg",
+    "image": "ordi.svg",
     "UserId": "3"
   },
   {
@@ -833,27 +833,27 @@
   },
   {
     "title_fr": "ménage",
-    "image": "guitar.svg",
+    "image": "pouch.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Garde d'enfants",
-    "image": "guitar.svg",
+    "image": "chien.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Transport de personnes entre Paspébiac et Carleton (0,25$ du Km pour l'essence)",
-    "image": "guitar.svg",
+    "image": "char.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Besoin de bras pour rénover ou construire, j'ai mes outils.",
-    "image": "guitar.svg",
+    "image": "diable.svg",
     "UserId": "3"
   },
   {
     "title_fr": "Offre service pour compléter divers formulaires par ordi ou écrit accompagnement et téléphone (gouvernement - demande de subvention etc)",
-    "image": "guitar.svg",
+    "image": "ordi.svg",
     "UserId": "3"
   }
 ]
