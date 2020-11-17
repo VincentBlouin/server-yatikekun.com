@@ -3,8 +3,9 @@ const {Users} = require('../model')
 const IMAGE_WIDTH = 500
 const config = require('../config')
 const uuid = require('uuid')
-const imageMagick = require('imagemagick')
 const fs = require('fs')
+const sharp = require('sharp');
+
 module.exports = {
     listAvailable(req, res) {
         return Offers.findAll({
@@ -46,15 +47,21 @@ module.exports = {
             if (err) {
                 return res.status(500).send(err)
             }
-            imageMagick.resize({
-                srcPath: fullSizeImagePath,
-                dstPath: imageBasePath + '/thumb_' + imageInfo.fileName,
-                width: IMAGE_WIDTH
-            }, function (err, stdout, stderr) {
-                if (err) throw err
-                console.log('resized image to fit within 200x200px')
-            })
-            res.send(imageInfo)
+            sharp(fullSizeImagePath)
+                .resize(IMAGE_WIDTH)
+                .toFile(imageBasePath + '/thumb_' + imageInfo.fileName, (err, info) => {
+                    if (err) throw err
+                    imageInfo.base64 = base64_encode(imageBasePath + '/thumb_' + imageInfo.fileName)
+                    res.send(imageInfo)
+                });
+            // imageMagick.resize({
+            //     srcPath: fullSizeImagePath,
+            //     dstPath: imageBasePath + '/thumb_' + imageInfo.fileName,
+            //     width: IMAGE_WIDTH
+            // }, function (err, stdout, stderr) {
+            //     if (err) throw err
+            //     console.log('resized image to fit within 200x200px')
+            // })
         })
     },
     getImage(req, res) {
@@ -77,8 +84,8 @@ module.exports = {
         let offer = req.body
         offer = await Offers.create({
             title_fr: offer.description,
-            image: offer.image.file,
-            imageCustom: offer.imageCustom,
+            image: offer.image ? offer.image.file : null,
+            customImage: offer.customImage,
             UserId: offer.UserId
         });
         res.send(offer);
@@ -104,4 +111,11 @@ module.exports = {
     //         res.send(product)
     //     })
     // }
+}
+
+function base64_encode(file) {
+    // read binary data
+    let bitmap = fs.readFileSync(file);
+    // convert binary data to base64 encoded string
+    return new Buffer(bitmap).toString('base64');
 }
