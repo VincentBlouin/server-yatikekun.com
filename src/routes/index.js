@@ -54,6 +54,12 @@ router.get(
 )
 
 router.post(
+    '/offer',
+    isAuthenticated,
+    OfferController.createOffer
+)
+
+router.post(
     '/offer/image',
     isAuthenticated,
     OfferController.uploadImage

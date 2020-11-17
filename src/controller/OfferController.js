@@ -59,7 +59,7 @@ module.exports = {
         const img = fs.readFileSync(config.getConfig().imageBasePath + '/thumb_' + secureFileName)
         res.writeHead(200, {'Content-Type': 'image/jpg'})
         res.end(img, 'binary')
-    }
+    },
     // getDetails(req, res) {
     //     const productId = parseInt(req.params['productId'])
     //     return Products.findOne({
@@ -70,24 +70,16 @@ module.exports = {
     //         res.send(product)
     //     })
     // },
-    // createProduct(req, res) {
-    //     const product = req.body
-    //     if (!product.nbInStock || product.nbInStock === '') {
-    //         product.nbInStock = 0
-    //     }
-    //     return Products.create({
-    //         name: product.name,
-    //         image: product.image,
-    //         format: product.format,
-    //         description: product.description,
-    //         unitPrice: product.unitPrice,
-    //         nbInStock: product.nbInStock,
-    //         isAvailable: product.isAvailable,
-    //         type: 'open'
-    //     }).then(function (product) {
-    //         res.send(product)
-    //     })
-    // },
+    async createOffer(req, res) {
+        let offer = req.body
+        offer = await Offers.create({
+            title_fr: offer.description,
+            image: offer.image.file,
+            imageCustom: offer.imageCustom,
+            UserId: offer.UserId
+        });
+        res.send(offer);
+    }
     // updateProduct(req, res) {
     //     const product = req.body
     //     if (!product.nbInStock || product.nbInStock === '') {
