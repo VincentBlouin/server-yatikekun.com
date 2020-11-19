@@ -1,6 +1,8 @@
 [
   {
     "email": "a@sel.org",
+    "firstname": "Armand",
+    "lastname": "Michel",
     "password": "12345678",
     "status": "admin",
     "locale": "fr",

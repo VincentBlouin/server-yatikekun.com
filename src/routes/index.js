@@ -9,6 +9,7 @@ const AuthenticationControllerPolicy = require('../policy/AuthenticationControll
 // const TransactionController = require('../controller/TransactionController')
 //
 const OfferController = require('../controller/OfferController')
+const MemberController = require('../controller/MemberController')
 
 const isAuthenticated = require('../policy/isAuthenticated')
 // const isOwnerOrAdmin = require('../policy/isOwnerOrAdmin')
@@ -69,4 +70,11 @@ router.get(
     '/offer/image/:uuid',
     OfferController.getImage
 )
+
+router.get(
+    '/member',
+    isAdmin,
+    MemberController.list
+)
+
 module.exports = router
