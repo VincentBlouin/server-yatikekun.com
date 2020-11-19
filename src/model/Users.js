@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
     const User = sequelize.define('Users', {
         firstname: DataTypes.STRING,
         lastname: DataTypes.STRING,
+        uuid: {
+            type: DataTypes.STRING,
+            unique: true
+        },
         email: {
             type: DataTypes.STRING,
             unique: true
@@ -37,16 +41,20 @@ module.exports = (sequelize, DataTypes) => {
         hooks: {
             beforeCreate: hashPassword,
             beforeUpdate: hashPassword
-        }
+        },
+        indexes: [{
+            unique: true,
+            fields: ['uuid']
+        }]
     })
     User.prototype.comparePassword = function (password) {
         return bcrypt.compareAsync(password, this.password)
     }
     User.defineAssociationsUsingModels = function (model, models) {
-
+        model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});
     }
     User.getSafeAttributes = function () {
-        return ["email", "id", "locale", "firstname", "lastname", "status", "createdAt"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt"]
     };
     return User
 }

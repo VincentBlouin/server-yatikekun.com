@@ -1,3 +1,5 @@
+
+
 const express = require('express')
 const router = express.Router()
 const AuthenticationController = require('../controller/AuthenticationController')
@@ -81,6 +83,12 @@ router.post(
     '/member',
     isAdmin,
     MemberController.createMember
+)
+
+router.get(
+    '/member/:memberId',
+    isAdmin,
+    MemberController.get
 )
 
 module.exports = router

@@ -8,7 +8,12 @@
     "locale": "fr",
     "latestTransaction": "2018-07-13 18:40:04.112-05",
     "region" : "BDC",
-    "subRegion": "saintGod"
+    "subRegion": "saintGod",
+    "AdminUserId": 1,
+    "uuid": "f75d5e72-7a3d-44c9-970f-b9d5eabade6c",
+    "phone1": "555-222-1123",
+    "gender": "nonBinary",
+    "address": "164 222 de la grand route"
   },
   {
     "email": "u@sel.org",
@@ -18,7 +23,12 @@
     "status": "member",
     "locale": "fr",
     "region" : "BDC",
-    "subRegion": "nouvelle"
+    "subRegion": "nouvelle",
+    "AdminUserId": 1,
+    "uuid": "1dcad149-3329-49a1-b417-48db85415ec5",
+    "phone1": "555-11-1323",
+    "gender": "nonBinary",
+    "address": "164 222 de la grand route"
   },
   {
     "email": "u2@sel.org",
@@ -28,6 +38,11 @@
     "status": "member",
     "locale": "fr",
     "region" : "BDC",
-    "subRegion": "bonaventure"
+    "subRegion": "bonaventure",
+    "AdminUserId": 1,
+    "uuid": "d9a8c523-417d-466f-811c-c08c490b34a3",
+    "phone1": "555-11-1323",
+    "gender": "male",
+    "address": "164 222 de la grand route"
   }
 ]
