@@ -9,7 +9,8 @@ module.exports = {
                 "lastname",
                 "email",
                 "status",
-                "locale"
+                "locale",
+                "subRegion"
             ],
             order: [
                 ['createdAt', 'DESC']
@@ -18,4 +19,13 @@ module.exports = {
             res.send(offers);
         })
     },
+    async createMember(req, res) {
+        let member = req.body
+        member.status = "member";
+        member.region = "BDC";
+        member = await Users.create(
+            member
+        );
+        res.send(member);
+    }
 }

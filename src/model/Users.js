@@ -22,11 +22,17 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.STRING,
             unique: true
         },
+        region: DataTypes.STRING,
+        subRegion: DataTypes.STRING,
+        phone1: DataTypes.STRING,
+        phone2: DataTypes.STRING,
+        gender: DataTypes.STRING,
+        address: DataTypes.STRING,
         password: DataTypes.STRING,
         resetPasswordToken: DataTypes.STRING,
         resetPasswordExpires: DataTypes.DATE,
         status: DataTypes.STRING,
-        locale: DataTypes.STRING,
+        locale: DataTypes.STRING
     }, {
         hooks: {
             beforeCreate: hashPassword,

@@ -6,7 +6,9 @@
     "password": "12345678",
     "status": "admin",
     "locale": "fr",
-    "latestTransaction": "2018-07-13 18:40:04.112-05"
+    "latestTransaction": "2018-07-13 18:40:04.112-05",
+    "region" : "BDC",
+    "subRegion": "saintGod"
   },
   {
     "email": "u@sel.org",
@@ -14,7 +16,9 @@
     "lastname": "Heureux",
     "password": "12345678",
     "status": "member",
-    "locale": "fr"
+    "locale": "fr",
+    "region" : "BDC",
+    "subRegion": "nouvelle"
   },
   {
     "email": "u2@sel.org",
@@ -22,6 +26,8 @@
     "lastname": "Belette",
     "password": "12345678",
     "status": "member",
-    "locale": "fr"
+    "locale": "fr",
+    "region" : "BDC",
+    "subRegion": "bonaventure"
   }
 ]

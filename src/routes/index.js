@@ -77,4 +77,10 @@ router.get(
     MemberController.list
 )
 
+router.post(
+    '/member',
+    isAdmin,
+    MemberController.createMember
+)
+
 module.exports = router
