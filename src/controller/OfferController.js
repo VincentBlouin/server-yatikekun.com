@@ -7,21 +7,11 @@ const fs = require('fs')
 const sharp = require('sharp');
 
 module.exports = {
-    listAvailable(req, res) {
-        return Offers.findAll({
-            where: {
-                isAvailable: true,
-            },
-            include: [User]
-        }).then(function (products) {
-            res.send(products)
-        })
-    },
     list(req, res) {
         return Offers.findAll({
             include: [{
                 model: Users,
-                attributes: ['firstname', 'lastname'],
+                attributes: ['subRegion'],
             }],
             order: [
                 ['createdAt', 'DESC']
