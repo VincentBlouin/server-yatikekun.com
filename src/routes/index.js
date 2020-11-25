@@ -1,5 +1,3 @@
-
-
 const express = require('express')
 const router = express.Router()
 const AuthenticationController = require('../controller/AuthenticationController')
@@ -69,8 +67,20 @@ router.post(
 )
 
 router.get(
+    '/offer/:offerId',
+    isAuthenticated,
+    OfferController.get
+)
+
+router.get(
     '/offer/image/:uuid',
     OfferController.getImage
+)
+
+router.put(
+    '/offer/:offerId',
+    isAuthenticated,
+    OfferController.updateOffer
 )
 
 router.get(
@@ -90,5 +100,6 @@ router.get(
     isAdmin,
     MemberController.get
 )
+
 
 module.exports = router

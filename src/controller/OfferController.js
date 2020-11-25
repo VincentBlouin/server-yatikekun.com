@@ -13,6 +13,9 @@ module.exports = {
                 model: Users,
                 attributes: ['subRegion'],
             }],
+            where: {
+                isAvailable: true
+            },
             order: [
                 ['createdAt', 'DESC']
             ]
@@ -76,7 +79,32 @@ module.exports = {
             title_fr: offer.description,
             image: offer.image ? offer.image.name : null,
             customImage: offer.customImage,
-            UserId: offer.UserId
+            UserId: offer.UserId,
+            isAvailable: offer.isAvailable
+        });
+        res.send(offer);
+    },
+    async updateOffer(req, res) {
+        let offer = req.body;
+        offer = await Offers.update({
+            title_fr: offer.description,
+            image: offer.image ? offer.image.name : null,
+            customImage: offer.customImage,
+            isAvailable: offer.isAvailable
+        }, {
+            where: {
+                id: offer.id,
+                UserId: req.user.id
+            }
+        });
+        res.send(offer);
+    },
+    async get(req, res) {
+        const offerId = req.params['offerId']
+        const offer = await Offers.findOne({
+            where: {
+                id: offerId
+            }
         });
         res.send(offer);
     }

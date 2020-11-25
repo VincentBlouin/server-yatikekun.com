@@ -3,7 +3,8 @@ module.exports = (sequelize, DataTypes) => {
         title_fr: DataTypes.STRING,
         title_en: DataTypes.STRING,
         image: DataTypes.STRING,
-        customImage: DataTypes.JSONB
+        customImage: DataTypes.JSONB,
+        isAvailable: DataTypes.BOOLEAN
     })
     Offers.defineAssociationsUsingModels = function (model, models) {
         model.belongsTo(models.Users)
