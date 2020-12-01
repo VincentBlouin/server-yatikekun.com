@@ -104,7 +104,11 @@ module.exports = {
         const offer = await Offers.findOne({
             where: {
                 id: offerId
-            }
+            },
+            include: [{
+                model: Users,
+                attributes: ['subRegion']
+            }]
         });
         res.send(offer);
     }
