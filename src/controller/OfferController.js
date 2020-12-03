@@ -107,7 +107,7 @@ module.exports = {
             },
             include: [{
                 model: Users,
-                attributes: ['subRegion']
+                attributes: Users.getSafeAttributes()
             }]
         });
         res.send(offer);
