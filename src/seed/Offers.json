@@ -874,7 +874,9 @@
   {
     "title_fr": "partage d'expérience sur la création d'un potager, échange de plantes et de semences",
     "image": "plante",
-    "UserId": "3"
+    "UserId": "3",
+    "experience_fr": "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo",
+    "additionalFees_fr": "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
   },
   {
     "title_fr": "danse contact impro http://hug661.wix.com/monsite",
