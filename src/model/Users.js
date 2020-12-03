@@ -36,7 +36,8 @@ module.exports = (sequelize, DataTypes) => {
         resetPasswordToken: DataTypes.STRING,
         resetPasswordExpires: DataTypes.DATE,
         status: DataTypes.STRING,
-        locale: DataTypes.STRING
+        locale: DataTypes.STRING,
+        facebookId:DataTypes.STRING
     }, {
         hooks: {
             beforeCreate: hashPassword,
@@ -54,7 +55,7 @@ module.exports = (sequelize, DataTypes) => {
         model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});
     }
     User.getSafeAttributes = function () {
-        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId"]
     };
     return User
 }

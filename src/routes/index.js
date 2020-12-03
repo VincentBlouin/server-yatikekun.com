@@ -101,5 +101,11 @@ router.get(
     MemberController.get
 )
 
+router.put(
+    '/member/:uuid',
+    isAuthenticated,
+    MemberController.updateMember
+)
+
 
 module.exports = router
