@@ -80,7 +80,9 @@ module.exports = {
             image: offer.image ? offer.image.name : null,
             customImage: offer.customImage,
             UserId: offer.UserId,
-            isAvailable: offer.isAvailable
+            isAvailable: offer.isAvailable,
+            experience_fr: offer.experience,
+            additionalFees_fr: offer.additionalFees
         });
         res.send(offer);
     },
@@ -90,7 +92,9 @@ module.exports = {
             title_fr: offer.description,
             image: offer.image ? offer.image.name : null,
             customImage: offer.customImage,
-            isAvailable: offer.isAvailable
+            isAvailable: offer.isAvailable,
+            experience_fr: offer.experience,
+            additionalFees_fr: offer.additionalFees
         }, {
             where: {
                 id: offer.id,
