@@ -58,8 +58,8 @@ module.exports = {
             res.send({
                 user: {
                     id: user.id,
-                    firstname: user.firstName,
-                    lastname: user.lastName,
+                    firstname: user.firstname,
+                    lastname: user.lastname,
                     email: user.email,
                     status: user.status
                 },

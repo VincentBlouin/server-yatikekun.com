@@ -9,6 +9,10 @@ module.exports = (sequelize, DataTypes) => {
         image: DataTypes.STRING,
         customImage: DataTypes.JSONB,
         isAvailable: DataTypes.BOOLEAN
+    }, {
+        indexes: [{
+            fields: ['UserId']
+        }]
     })
     Offers.defineAssociationsUsingModels = function (model, models) {
         model.belongsTo(models.Users)

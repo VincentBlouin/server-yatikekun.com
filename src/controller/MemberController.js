@@ -1,23 +1,27 @@
 const {Users} = require('../model')
 const uuid = require('uuid')
 module.exports = {
-    list(req, res) {
-        return Users.findAll({
-            attributes: [
-                "uuid",
-                "firstname",
-                "lastname",
+    async list(req, res) {
+        let attributes = [
+            "uuid",
+            "firstname",
+            "lastname"
+        ];
+        if (req.user.status === 'admin') {
+            attributes = attributes.concat([
                 "email",
                 "status",
                 "locale",
-                "subRegion",
-            ],
+                "subRegion"
+            ])
+        }
+        let offers = await Users.findAll({
+            attributes: attributes,
             order: [
                 ['createdAt', 'DESC']
             ]
-        }).then((offers) => {
-            res.send(offers);
-        })
+        });
+        res.send(offers);
     },
     async createMember(req, res) {
         let member = req.body

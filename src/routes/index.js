@@ -85,7 +85,7 @@ router.put(
 
 router.get(
     '/member',
-    isAdmin,
+    isAuthenticated,
     MemberController.list
 )
 
