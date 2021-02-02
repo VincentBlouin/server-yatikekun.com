@@ -9,18 +9,18 @@ const resetPasswordEn = {
     from: 'noreply@seldemer.org',
     subject: 'Change your password',
     content: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.<br><br>' +
-    'Please click on the following link, or paste this into your browser to continue the process:<br><br>' +
-    '%s/change-password/%s<br><br>' +
-    'If you did not request this, please ignore this email and your password will remain unchanged.<br><br>'
+        'Please click on the following link, or paste this into your browser to continue the process:<br><br>' +
+        '%s/change-password/%s<br><br>' +
+        'If you did not request this, please ignore this email and your password will remain unchanged.<br><br>'
 }
 
 const resetPasswordFr = {
     from: 'nepasrepondre@seldemer.org',
     subject: 'Modifier votre mot de passe',
     content: 'Vous reçevez ce courriel, parce que vous (ou quelqu\'un d\'autre) a demandé la réinitialisation du mot de passe de votre compte.<br><br>' +
-    'Cliquez sur le lien suivant, ou coller le dans votre navigateur pour poursuivre le processus:<br><br>' +
-    '%s/change-password/%s<br><br>' +
-    'Si vous n\'avez pas fait cette demande, ignorez ce courriel et votre mot de passe demeurera inchangé.<br>'
+        'Cliquez sur le lien suivant, ou coller le dans votre navigateur pour poursuivre le processus:<br><br>' +
+        '%s/change-password/%s<br><br>' +
+        'Si vous n\'avez pas fait cette demande, ignorez ce courriel et votre mot de passe demeurera inchangé.<br>'
 }
 const ONE_WEEK = 60 * 60 * 24 * 7
 
@@ -58,6 +58,7 @@ module.exports = {
             res.send({
                 user: {
                     id: user.id,
+                    uuid: user.uuid,
                     firstname: user.firstname,
                     lastname: user.lastname,
                     email: user.email,
@@ -96,7 +97,7 @@ module.exports = {
             res.status(400).send({
                 error: 'This account is already in use'
             });
-        }).then(function(){
+        }).then(function () {
             res.sendStatus(200)
         })
     },
