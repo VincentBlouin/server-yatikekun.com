@@ -6,8 +6,7 @@ const AuthenticationControllerPolicy = require('../policy/AuthenticationControll
 
 // const UserController = require('../controller/UserController')
 //
-// const TransactionController = require('../controller/TransactionController')
-//
+const TransactionController = require('../controller/TransactionController')
 const OfferController = require('../controller/OfferController')
 const MemberController = require('../controller/MemberController')
 
@@ -107,5 +106,10 @@ router.put(
     MemberController.updateMember
 )
 
+router.post(
+    '/transaction',
+    isAuthenticated,
+    TransactionController.addTransaction
+)
 
 module.exports = router
