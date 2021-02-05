@@ -112,4 +112,10 @@ router.post(
     TransactionController.addTransaction
 )
 
+router.get(
+    '/transaction/pending/user/:userId/offer/:offerId',
+    isAuthenticated,
+    TransactionController.pendingTransactionOfOffer
+)
+
 module.exports = router

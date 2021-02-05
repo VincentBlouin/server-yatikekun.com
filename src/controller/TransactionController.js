@@ -3,7 +3,7 @@ const {
     Users,
     Transactions
 } = models
-module.exports = {
+const TransactionController = {
     async addTransaction(req, res) {
         const receiver = await Users.findOne({
             where: {
@@ -16,8 +16,39 @@ module.exports = {
             InitiatorId: req.body.InitiatorId,
             GiverId: req.body.GiverId,
             ReceiverId: receiver.id,
-            OfferId: req.body.OfferId
+            OfferId: req.body.OfferId,
+            status: "PENDING"
         });
         res.sendStatus(200);
+    },
+    async pendingTransactionOfOffer(req, res) {
+        const userId = parseInt(req.params['userId']);
+        if (userId !== req.user.id) {
+            return res.send(403);
+        }
+        const offerId = req.params['offerId'];
+        const pendingTransaction = await TransactionController._getPendingTransactionForUserId(
+            userId,
+            offerId
+        );
+        res.send(pendingTransaction);
+    },
+    async _getPendingTransactionForUserId(userId, offerId) {
+        return Transactions.findOne({
+            where: {
+                OfferId: offerId,
+                status: "PENDING",
+                $or: [
+                    {
+                        GiverId: userId
+
+                    },
+                    {
+                        ReceiverId: userId
+                    },
+                ]
+            }
+        });
     }
 }
+module.exports = TransactionController;
