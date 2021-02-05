@@ -34,7 +34,12 @@ const TransactionController = {
         res.send(pendingTransaction);
     },
     async _getPendingTransactionForUserId(userId, offerId) {
-        return Transactions.findOne({
+        return Transactions.findAll({
+            include: [
+                {model: Users, as: 'initiator'},
+                {model: Users, as: 'giver'},
+                {model: Users, as: 'receiver'}
+            ],
             where: {
                 OfferId: offerId,
                 status: "PENDING",
