@@ -36,9 +36,9 @@ const TransactionController = {
     async _getPendingTransactionForUserId(userId, offerId) {
         return Transactions.findAll({
             include: [
-                {model: Users, as: 'initiator'},
-                {model: Users, as: 'giver'},
-                {model: Users, as: 'receiver'}
+                { model: Users, as: 'initiator', attributes: Users.getFewAttributes() },
+                { model: Users, as: 'giver', attributes: Users.getFewAttributes() },
+                { model: Users, as: 'receiver', attributes: Users.getFewAttributes() }
             ],
             where: {
                 OfferId: offerId,

@@ -57,5 +57,8 @@ module.exports = (sequelize, DataTypes) => {
     User.getSafeAttributes = function () {
         return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId"]
     };
+    User.getFewAttributes = function () {
+        return ["uuid", "locale", "firstname", "lastname", "status", "gender"]
+    };
     return User
 }
