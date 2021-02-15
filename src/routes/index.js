@@ -106,6 +106,12 @@ router.put(
     MemberController.updateMember
 )
 
+router.get(
+    '/transaction/user/:userId',
+    isAuthenticated,
+    TransactionController.list
+)
+
 router.post(
     '/transaction',
     isAuthenticated,

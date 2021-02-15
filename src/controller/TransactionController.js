@@ -4,6 +4,28 @@ const {
     Transactions
 } = models
 const TransactionController = {
+    async list(req, res) {
+        const userId = parseInt(req.params.userId);
+        const transactions = await Transactions.findAll({
+            include: [
+                { model: Users, as: 'initiator', attributes: Users.getFewAttributes() },
+                { model: Users, as: 'giver', attributes: Users.getFewAttributes() },
+                { model: Users, as: 'receiver', attributes: Users.getFewAttributes() }
+            ],
+            where: {
+                $or: [
+                    {
+                        GiverId: userId
+
+                    },
+                    {
+                        ReceiverId: userId
+                    },
+                ]
+            }
+        });
+        res.send(transactions);
+    },
     async addTransaction(req, res) {
         const receiver = await Users.findOne({
             where: {
