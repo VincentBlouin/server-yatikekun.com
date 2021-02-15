@@ -11,7 +11,7 @@ const TransactionController = {
             }
         });
         await Transactions.create({
-            amount: req.body.quantity,
+            amount: req.body.amount,
             details: req.body.details,
             InitiatorId: req.body.InitiatorId,
             GiverId: req.body.GiverId,
