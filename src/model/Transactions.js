@@ -6,32 +6,30 @@ module.exports = (sequelize, DataTypes) => {
         comment: DataTypes.TEXT,
         balanceGiver: DataTypes.DOUBLE,
         balanceReceiver: DataTypes.DOUBLE,
-        status: DataTypes.STRING
+        status: DataTypes.STRING,
+        confirmDate: 'TIMESTAMP'
     }, {
         indexes: [{
-            fields: ['GiverId', 'ReceiverId']
+            fields: ['GiverId', 'ReceiverId', 'confirmDate']
         }]
     })
     Transactions.defineAssociationsUsingModels = function (model, models) {
         model.belongsTo(models.Users, {
             as: 'initiator',
             foreignKey: {
-                name: 'InitiatorId',
-                allowNull: false
+                name: 'InitiatorId'
             }
         });
         model.belongsTo(models.Users, {
             as: 'giver',
             foreignKey: {
-                name: 'GiverId',
-                allowNull: false
+                name: 'GiverId'
             }
         });
         model.belongsTo(models.Users, {
             as: 'receiver',
             foreignKey: {
-                name: 'ReceiverId',
-                allowNull: false
+                name: 'ReceiverId'
             }
         });
         model.belongsTo(models.Offers);

@@ -1,6 +1,6 @@
-const {Users} = require('../model')
+const { Users, Transactions } = require('../model')
 const uuid = require('uuid')
-module.exports = {
+const MemberController = {
     async list(req, res) {
         let attributes = [
             "uuid",
@@ -31,6 +31,7 @@ module.exports = {
         member = await Users.create(
             member
         );
+        await MemberController._createInitialTransactionForMemberId(member.id);
         res.send(member);
     },
     async get(req, res) {
@@ -66,4 +67,15 @@ module.exports = {
         });
         res.send(member);
     },
-}
+    async _createInitialTransactionForMemberId(memberId) {
+        await Transactions.create({
+            amount: 5,
+            details: "initial",
+            ReceiverId: memberId,
+            confirmDate: new Date().getTime(),
+            status: "CONFIRMED",
+            balanceReceiver: 5
+        });
+    }
+};
+module.exports = MemberController;

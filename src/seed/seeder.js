@@ -10,14 +10,17 @@ const {
 
 const users = require('./Users.json')
 const offers = require('./Offers.json')
+const MemberController = require("../controller/MemberController")
 
 module.exports = {
     run: function () {
-        return sequelize.sync({force: true})
+        return sequelize.sync({ force: true })
             .then(() => {
                 return Promise.all(
                     users.map(user => {
-                        return Users.create(user)
+                        return Users.create(user).then((newUser) => {
+                            return MemberController._createInitialTransactionForMemberId(newUser.id)
+                        });
                     })
                 )
             }).then(() => {
