@@ -45,7 +45,7 @@ const port = config.getConfig().port || 4105
 sequelize.sync()
   .then(() => {
     server.listen(port, function () {
-      console.log('Sel de mer app listening on environment', app.get('env'))
+      console.log('partageheure.com app listening on environment', app.get('env'))
     })
   })
 

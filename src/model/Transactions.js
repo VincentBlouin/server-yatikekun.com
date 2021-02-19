@@ -7,10 +7,11 @@ module.exports = (sequelize, DataTypes) => {
         balanceGiver: DataTypes.DOUBLE,
         balanceReceiver: DataTypes.DOUBLE,
         status: DataTypes.STRING,
-        confirmDate: 'TIMESTAMP'
+        confirmDate: 'TIMESTAMP',
+        confirmToken: DataTypes.STRING
     }, {
         indexes: [{
-            fields: ['GiverId', 'ReceiverId', 'confirmDate']
+            fields: ['GiverId', 'ReceiverId', 'confirmDate', 'confirmToken']
         }]
     })
     Transactions.defineAssociationsUsingModels = function (model, models) {

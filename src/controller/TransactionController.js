@@ -1,4 +1,29 @@
 const models = require('../model')
+const crypto = require('crypto')
+const EmailClient = require('../EmailClient')
+const sprintf = require('sprintf-js').sprintf
+const config = require('../config')
+
+const confirmTransactionFr = {
+    from: 'horizonsgaspesiens@gmail.com ',
+    subject: 'partageheure.com, confirmer une transaction',
+    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
+        '%s<br><br>' +
+        'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
+        '%s/confirm-transaction/%s<br><br>' +
+        'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
+}
+
+const confirmTransactionEn = {
+    from: 'horizonsgaspesiens@gmail.com ',
+    subject: 'partageheure.com, confirmer une transaction',
+    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
+        '%s<br><br>' +
+        'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
+        '%s/confirm-transaction/%s<br><br>' +
+        'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
+}
+
 const {
     Users,
     Transactions
@@ -27,12 +52,19 @@ const TransactionController = {
         res.send(transactions);
     },
     async addTransaction(req, res) {
+        if (req.user.id !== req.body.InitiatorId) {
+            return res.sendStatus(401);
+        }
         const receiver = await Users.findOne({
             where: {
                 uuid: req.body.ReceiverUuid
             }
         });
-        await Transactions.create({
+        const otherUserId = req.body.InitiatorId === receiver.id ? req.body.GiverId : receiver.id;
+        if (req.user.id === otherUserId) {
+            return res.sendStatus(401);
+        }
+        const newTransaction = await Transactions.create({
             amount: req.body.amount,
             details: req.body.details,
             InitiatorId: req.body.InitiatorId,
@@ -41,6 +73,7 @@ const TransactionController = {
             OfferId: req.body.OfferId,
             status: "PENDING"
         });
+        TransactionController._sendConfirmEmailToUserIdInTransaction(otherUserId, newTransaction);
         res.sendStatus(200);
     },
     async confirm(req, res) {
@@ -125,6 +158,36 @@ const TransactionController = {
                 ]
             }
         });
+    },
+    async _sendConfirmEmailToUserIdInTransaction(userId, transaction) {
+        const user = await Users.findOne({
+            where: {
+                id: userId
+            },
+            attributes: ['email']
+        });
+        const otherUserId = transaction.GiverId === userId ? transaction.ReceiverId : transaction.GiverId;
+        const otherUser = await Users.findOne({
+            where: {
+                id: otherUserId
+            },
+            attributes: ['firstname', 'lastname']
+        });
+        const otherUserFullname = otherUser.firstname + " " + otherUser.lastname;
+        const email = user.email;
+        const token = crypto.randomBytes(32).toString('hex')
+        transaction.confirmToken = token;
+        await transaction.save();
+        const emailText = true ? confirmTransactionFr : confirmTransactionEn
+        const emailContent = {
+            from: EmailClient.buildFrom(emailText.from),
+            to: email,
+            subject: emailText.subject,
+            html: sprintf(emailText.content, otherUserFullname, transaction.details, config.getConfig().baseUrl, token)
+        }
+        EmailClient.addEmailNumber(emailContent, "fr", '068b6faa')
+        await EmailClient.send(emailContent)
+        res.sendStatus(200);
     }
 }
 module.exports = TransactionController;

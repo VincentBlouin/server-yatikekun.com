@@ -9,7 +9,7 @@
     "seed": "NODE_ENV=development node ./src/seed"
   },
   "dependencies": {
-    "@sendgrid/mail": "^7.4.0",
+    "@sendgrid/mail": "^7.4.2",
     "bcrypt-nodejs": "^0.0.3",
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",

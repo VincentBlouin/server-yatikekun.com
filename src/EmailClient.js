@@ -15,11 +15,11 @@ if (isMock) {
 const sprintf = require('sprintf-js').sprintf
 const supportTextFR = {
   text: 'Pour plus d\'information visitez la section support de notre site',
-  link: 'www.seldemer.org'
+  link: 'www.partageheure.com'
 }
 const supportTextEN = {
   text: 'For more information visit the support section of our website',
-  link: 'www.seldemer.org'
+  link: 'www.partageheure.com'
 }
 const EmailClient = {
   client: emailClient,
@@ -47,7 +47,7 @@ const EmailClient = {
     }
   },
   buildFrom: function (fromEmail) {
-    return 'seldemer.org <' + fromEmail + '>'
+    return 'partageheure.com <' + fromEmail + '>'
   },
   addSupportText: function (emailDescription, language) {
     const content = language.toUpperCase() === 'FR' ? supportTextFR : supportTextEN
