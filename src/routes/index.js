@@ -124,6 +124,11 @@ router.post(
     TransactionController.confirm
 )
 
+router.post(
+    '/transaction/token',
+    TransactionController.confirmWithToken
+)
+
 router.get(
     '/transaction/pending/user/:userId/offer/:offerId',
     isAuthenticated,

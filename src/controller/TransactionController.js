@@ -89,20 +89,51 @@ const TransactionController = {
         if (transaction.GiverId !== userId && transaction.ReceiverId !== userId) {
             return res.sendStatus(401);
         }
+        if (transaction.status === "CONFIRMED") {
+            return res.sendStatus(200);
+        }
         if (transaction.status !== "PENDING") {
             return res.sendStatus(400);
         }
         if (transaction.InitiatorId === userId) {
             return res.sendStatus(400);
         }
+        await TransactionController._confirmTransaction(transaction);
+        res.sendStatus(200);
+    },
+    async confirmWithToken(req, res) {
+        const token = req.body.token;
+        if (token === null) {
+            return res.sendStatus(401);
+        }
+        if (token.trim() === "") {
+            return res.sendStatus(401);
+        }
+        const transaction = await Transactions.findOne({
+            where: {
+                confirmToken: token
+            }
+        });
+        if (!transaction) {
+            return res.sendStatus(400);
+        }
+        if (transaction.status === "CONFIRMED") {
+            return res.sendStatus(200);
+        }
+        if (transaction.status !== "PENDING") {
+            return res.sendStatus(400);
+        }
+        await TransactionController._confirmTransaction(transaction);
+        res.sendStatus(200);
+    },
+    async _confirmTransaction(transaction) {
         const giverPreviousBalance = await TransactionController._getBalanceForUserId(transaction.GiverId);
         const receiverPreviousBalance = await TransactionController._getBalanceForUserId(transaction.ReceiverId);
         transaction.balanceGiver = giverPreviousBalance + transaction.amount;
         transaction.balanceReceiver = receiverPreviousBalance - transaction.amount;
         transaction.confirmDate = new Date().getTime();
-        transaction.status = "CONFIRMED";
-        transaction.save();
-        res.sendStatus(200);
+        transaction.status = "CONFIRMED";    
+        await transaction.save();
     },
     async pendingTransactionOfOffer(req, res) {
         const userId = parseInt(req.params['userId']);
