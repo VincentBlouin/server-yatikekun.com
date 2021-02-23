@@ -1,4 +1,4 @@
-const { Users, Transactions } = require('../model')
+const {Users, Transactions} = require('../model')
 const uuid = require('uuid');
 const AuthenticationController = require('./AuthenticationController')
 const MemberController = {
@@ -27,7 +27,7 @@ const MemberController = {
     async createMember(req, res) {
         let member = req.body;
         member.email = member.email.toLowerCase();
-        member.password = null;
+        delete member.password;
         let user = await Users.findOne({
             where: {
                 email: member.email

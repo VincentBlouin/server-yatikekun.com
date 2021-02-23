@@ -28,17 +28,17 @@ router.post(
 )
 
 router.post(
-    '/api/reset-password',
+    '/reset-password',
     AuthenticationController.resetPassword
 )
 
 router.post(
-    '/api/token-valid',
+    '/token-valid',
     AuthenticationController.isTokenValid
 )
 
 router.post(
-    '/api/change-password',
+    '/change-password',
     AuthenticationController.changePassword
 )
 

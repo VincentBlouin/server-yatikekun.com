@@ -1,4 +1,4 @@
-const { Users } = require('../model')
+const {Users} = require('../model')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const crypto = require('crypto')
@@ -22,7 +22,7 @@ const resetPasswordFr = {
         '%s/change-password/%s<br><br>' +
         'Si vous n\'avez pas fait cette demande, ignorez ce courriel et votre mot de passe demeurera inchangé.<br>'
 }
-const TWO_WEEKS = 2 * (60 * 60 * 24 * 7);
+const TWO_WEEKS = 1209600000;
 
 function jwtSignUser(user) {
     return jwt.sign(user, config.getConfig().authentication.jwtSecret, {})
@@ -30,8 +30,8 @@ function jwtSignUser(user) {
 
 const AuthenticationController = {
     login(req, res) {
-        const { email, password } = req.body
-        if (!password || password.trim() === '') {
+        const {email, password} = req.body
+        if (!password || password.trim() === '' || password === null) {
             return res.status(403)
         }
         let user;
@@ -72,7 +72,7 @@ const AuthenticationController = {
         })
     },
     async register(req, res) {
-        
+
         user = await Users.create({
             firstname: req.body.firstName,
             lastname: req.body.lastName,
@@ -85,7 +85,7 @@ const AuthenticationController = {
         });
     },
     async resetPassword(req, res) {
-        const { email, locale } = req.body
+        const {email, locale} = req.body
         const token = await AuthenticationController._resetPassword(email, locale);
         const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
         const emailContent = {
@@ -117,7 +117,7 @@ const AuthenticationController = {
         Users.findOne({
             where: {
                 resetPasswordToken: req.body.token,
-                resetPasswordExpires: { $gt: Date.now() }
+                resetPasswordExpires: {$gt: Date.now()}
             }
         }).then(function (user) {
             return res.sendStatus(
@@ -131,7 +131,7 @@ const AuthenticationController = {
         })
     },
     changePassword: function (req, res) {
-        const { token, newPassword } = req.body
+        const {token, newPassword} = req.body
         if (!token) {
             return res.sendStatus(
                 403
@@ -140,7 +140,7 @@ const AuthenticationController = {
         Users.findOne({
             where: {
                 resetPasswordToken: token,
-                resetPasswordExpires: { $gt: Date.now() }
+                resetPasswordExpires: {$gt: Date.now()}
             }
         }).then(function (user) {
             if (!user) {
@@ -151,7 +151,7 @@ const AuthenticationController = {
             user.password = newPassword
             user.resetPasswordToken = null
             user.resetPasswordExpires = null
-            return user.save()
+            return user.save();
         }).then(function () {
             return res.sendStatus(
                 200
@@ -164,7 +164,7 @@ const AuthenticationController = {
         })
     },
     emailExists: function (req, res) {
-        const { email } = req.body
+        const {email} = req.body
         if (!email) {
             return res.sendStatus(
                 403
