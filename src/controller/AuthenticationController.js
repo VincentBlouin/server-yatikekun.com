@@ -1,4 +1,4 @@
-const {Users} = require('../model')
+const { Users } = require('../model')
 const jwt = require('jsonwebtoken')
 const config = require('../config')
 const crypto = require('crypto')
@@ -22,17 +22,15 @@ const resetPasswordFr = {
         '%s/change-password/%s<br><br>' +
         'Si vous n\'avez pas fait cette demande, ignorez ce courriel et votre mot de passe demeurera inchangé.<br>'
 }
-const ONE_WEEK = 60 * 60 * 24 * 7
+const TWO_WEEKS = 2 * (60 * 60 * 24 * 7);
 
 function jwtSignUser(user) {
-    return jwt.sign(user, config.getConfig().authentication.jwtSecret, {
-        expiresIn: ONE_WEEK
-    })
+    return jwt.sign(user, config.getConfig().authentication.jwtSecret, {})
 }
 
-module.exports = {
+const AuthenticationController = {
     login(req, res) {
-        const {email, password} = req.body
+        const { email, password } = req.body
         if (!password || password.trim() === '') {
             return res.status(403)
         }
@@ -73,72 +71,53 @@ module.exports = {
             })
         })
     },
-    register(req, res) {
-        return Users.findOne({
-            where: {
-                email: req.body.email.toLowerCase(),
-                status: 'non-registered'
-            },
-        }).then(function (user) {
-            if (user) {
-                return res.status(403).send({
-                    error: 'Login information is incorrect'
-                })
-            } else {
-                return Users.create({
-                    firstname: req.body.firstName,
-                    lastname: req.body.lastName,
-                    email: req.body.email.toLowerCase(),
-                    password: req.body.password
-                })
-            }
-        }).catch(function (err) {
-            console.log(err);
-            res.status(400).send({
-                error: 'This account is already in use'
-            });
-        }).then(function () {
-            res.sendStatus(200)
-        })
+    async register(req, res) {
+        
+        user = await Users.create({
+            firstname: req.body.firstName,
+            lastname: req.body.lastName,
+            email: req.body.email.toLowerCase(),
+            password: req.body.password
+        });
+        const passwordToken = await AuthenticationController._resetPassword(user.email);
+        res.send({
+            passwordToken: passwordToken
+        });
     },
-    resetPassword(req, res) {
-        const {email, locale} = req.body
+    async resetPassword(req, res) {
+        const { email, locale } = req.body
+        const token = await AuthenticationController._resetPassword(email, locale);
+        const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
+        const emailContent = {
+            from: EmailClient.buildFrom(emailText.from),
+            to: email,
+            subject: emailText.subject,
+            html: sprintf(emailText.content, config.getConfig().baseUrl, token)
+        }
+        EmailClient.addEmailNumber(emailContent, locale, '7401e739')
+        await EmailClient.send(emailContent);
+        res.sendStatus(200);
+    },
+    _resetPassword: async function (email) {
         const token = crypto.randomBytes(32).toString('hex')
-        return Users.findOne({
+        const user = await Users.findOne({
             where: {
                 email: email
             }
-        }).then(function (user) {
-            if (!user) {
-                return res.sendStatus(200)
-            }
-            user.resetPasswordToken = token
-            user.resetPasswordExpires = Date.now() + 3600000 // 1 hour
-            return user.save()
-        }).then(function () {
-            const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
-            const emailContent = {
-                from: EmailClient.buildFrom(emailText.from),
-                to: email,
-                subject: emailText.subject,
-                html: sprintf(emailText.content, config.getConfig().baseUrl, token)
-            }
-            EmailClient.addEmailNumber(emailContent, locale, '7401e739')
-            return EmailClient.send(emailContent)
-        }).then(function () {
-            res.sendStatus(200)
-        }).catch(function (error) {
-            console.log(error)
-            return res.status(500).send({
-                error: 'An error has occured trying to send reset password'
-            })
-        })
+        });
+        if (!user) {
+            return;
+        }
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = Date.now() + TWO_WEEKS;
+        await user.save();
+        return token;
     },
     isTokenValid: function (req, res) {
         Users.findOne({
             where: {
                 resetPasswordToken: req.body.token,
-                resetPasswordExpires: {$gt: Date.now()}
+                resetPasswordExpires: { $gt: Date.now() }
             }
         }).then(function (user) {
             return res.sendStatus(
@@ -152,7 +131,7 @@ module.exports = {
         })
     },
     changePassword: function (req, res) {
-        const {token, newPassword} = req.body
+        const { token, newPassword } = req.body
         if (!token) {
             return res.sendStatus(
                 403
@@ -161,7 +140,7 @@ module.exports = {
         Users.findOne({
             where: {
                 resetPasswordToken: token,
-                resetPasswordExpires: {$gt: Date.now()}
+                resetPasswordExpires: { $gt: Date.now() }
             }
         }).then(function (user) {
             if (!user) {
@@ -185,7 +164,7 @@ module.exports = {
         })
     },
     emailExists: function (req, res) {
-        const {email} = req.body
+        const { email } = req.body
         if (!email) {
             return res.sendStatus(
                 403
@@ -195,7 +174,7 @@ module.exports = {
             where: {
                 email: email
             },
-            attributes: ['email', 'id', 'locale', 'firstName', 'lastName']
+            attributes: ['email', 'uuid', 'locale', 'firstName', 'lastName']
         }).then(function (user) {
             if (!user) {
                 return res.sendStatus(
@@ -212,4 +191,5 @@ module.exports = {
             })
         })
     }
-}
+};
+module.exports = AuthenticationController;

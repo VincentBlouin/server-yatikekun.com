@@ -1,5 +1,6 @@
 const { Users, Transactions } = require('../model')
-const uuid = require('uuid')
+const uuid = require('uuid');
+const AuthenticationController = require('./AuthenticationController')
 const MemberController = {
     async list(req, res) {
         let attributes = [
@@ -24,7 +25,19 @@ const MemberController = {
         res.send(offers);
     },
     async createMember(req, res) {
-        let member = req.body
+        let member = req.body;
+        member.email = member.email.toLowerCase();
+        member.password = null;
+        let user = await Users.findOne({
+            where: {
+                email: member.email
+            }
+        });
+        if (user) {
+            return res.status(403).send({
+                error: 'Register information is incorrect'
+            })
+        }
         member.uuid = uuid();
         member.status = "member";
         member.region = "BDC";
@@ -32,7 +45,10 @@ const MemberController = {
             member
         );
         await MemberController._createInitialTransactionForMemberId(member.id);
-        res.send(member);
+        const passwordToken = await AuthenticationController._resetPassword(member.email);
+        res.send({
+            passwordToken: passwordToken
+        });
     },
     async get(req, res) {
         const memberId = req.params['memberId']

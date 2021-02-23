@@ -28,11 +28,6 @@ router.post(
 )
 
 router.post(
-    '/api/register',
-    AuthenticationController.register
-)
-
-router.post(
     '/api/reset-password',
     AuthenticationController.resetPassword
 )
