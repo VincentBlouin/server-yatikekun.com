@@ -86,7 +86,10 @@ const AuthenticationController = {
     },
     async resetPassword(req, res) {
         const {email, locale} = req.body
-        const token = await AuthenticationController._resetPassword(email, locale);
+        const token = await AuthenticationController._resetPassword(email);
+        if (!token) {
+            return res.sendStatus(400);
+        }
         const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
         const emailContent = {
             from: EmailClient.buildFrom(emailText.from),
@@ -95,8 +98,12 @@ const AuthenticationController = {
             html: sprintf(emailText.content, config.getConfig().baseUrl, token)
         }
         EmailClient.addEmailNumber(emailContent, locale, '7401e739')
-        await EmailClient.send(emailContent);
-        res.sendStatus(200);
+        await EmailClient.send(emailContent).then(() => {
+            res.sendStatus(200);
+        }).catch((error) => {
+            console.log(error);
+            res.sendStatus(500);
+        });
     },
     _resetPassword: async function (email) {
         const token = crypto.randomBytes(32).toString('hex')

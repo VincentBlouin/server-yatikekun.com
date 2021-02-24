@@ -217,7 +217,7 @@ const TransactionController = {
             html: sprintf(emailText.content, otherUserFullname, transaction.details, config.getConfig().baseUrl, token)
         }
         EmailClient.addEmailNumber(emailContent, "fr", '068b6faa')
-        await EmailClient.send(emailContent)
+        await EmailClient.send(emailContent);
         res.sendStatus(200);
     }
 }
