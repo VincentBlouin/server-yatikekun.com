@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         balanceGiver: DataTypes.DOUBLE,
         balanceReceiver: DataTypes.DOUBLE,
         status: DataTypes.STRING,
-        confirmDate: 'TIMESTAMP',
+        confirmDate: DataTypes.DATE,
         confirmToken: DataTypes.STRING
     }, {
         indexes: [{

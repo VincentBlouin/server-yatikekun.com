@@ -92,7 +92,7 @@ const MemberController = {
             amount: 5,
             details: "initial",
             ReceiverId: memberId,
-            confirmDate: new Date().getTime(),
+            confirmDate: new Date(),
             status: "CONFIRMED",
             balanceReceiver: 5
         });

@@ -131,7 +131,7 @@ const TransactionController = {
         const receiverPreviousBalance = await TransactionController._getBalanceForUserId(transaction.ReceiverId);
         transaction.balanceGiver = giverPreviousBalance + transaction.amount;
         transaction.balanceReceiver = receiverPreviousBalance - transaction.amount;
-        transaction.confirmDate = new Date().getTime();
+        transaction.confirmDate = new Date();
         transaction.status = "CONFIRMED";    
         await transaction.save();
     },
