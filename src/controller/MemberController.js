@@ -65,6 +65,9 @@ const MemberController = {
         if (member.id !== req.user.id && req.user.status !== 'admin') {
             return res.send(403);
         }
+        if (req.user.status !== 'admin') {
+            member.status = "member"
+        }
         member = await Users.update({
             firstname: member.firstname,
             lastname: member.lastname,
@@ -74,7 +77,8 @@ const MemberController = {
             phone1: member.phone1,
             phone2: member.phone2,
             gender: member.gender,
-            address: member.address
+            address: member.address,
+            status: member.status
         }, {
             where: {
                 id: member.id,
