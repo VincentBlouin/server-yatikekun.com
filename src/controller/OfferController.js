@@ -23,6 +23,21 @@ module.exports = {
             res.send(offers);
         })
     },
+    async listForUser(req, res) {
+        const userId = parseInt(req.params.userId);
+        if (req.user.id !== userId) {
+            return res.sendStatus(401);
+        }
+        const offers = await Offers.findAll({
+            where: {
+                UserId: userId
+            },
+            order: [
+                ['createdAt', 'DESC']
+            ]
+        });
+        res.send(offers);
+    },
     uploadImage(req, res) {
         if (!req.files || !req.files.images) {
             return res.status(400).send('No files were uploaded.')
