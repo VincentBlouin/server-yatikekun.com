@@ -6,7 +6,7 @@ const sprintf = require('sprintf-js').sprintf
 const EmailClient = require('../EmailClient')
 
 const resetPasswordEn = {
-    from: 'noreply@seldemer.org',
+    from: 'horizonsgaspesiens@gmail.com',
     subject: 'Change your password',
     content: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.<br><br>' +
         'Please click on the following link, or paste this into your browser to continue the process:<br><br>' +
@@ -15,7 +15,7 @@ const resetPasswordEn = {
 }
 
 const resetPasswordFr = {
-    from: 'nepasrepondre@seldemer.org',
+    from: 'horizonsgaspesiens@gmail.com',
     subject: 'Modifier votre mot de passe',
     content: 'Vous reçevez ce courriel, parce que vous (ou quelqu\'un d\'autre) a demandé la réinitialisation du mot de passe de votre compte.<br><br>' +
         'Cliquez sur le lien suivant, ou coller le dans votre navigateur pour poursuivre le processus:<br><br>' +
