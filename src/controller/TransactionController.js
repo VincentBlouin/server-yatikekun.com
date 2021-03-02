@@ -5,7 +5,7 @@ const sprintf = require('sprintf-js').sprintf
 const config = require('../config')
 
 const confirmTransactionFr = {
-    from: 'horizonsgaspesiens@gmail.com ',
+    from: 'horizonsgaspesiens@gmail.com',
     subject: 'partageheure.com, confirmer une transaction',
     content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
         '%s<br><br>' +
@@ -15,7 +15,7 @@ const confirmTransactionFr = {
 }
 
 const confirmTransactionEn = {
-    from: 'horizonsgaspesiens@gmail.com ',
+    from: 'horizonsgaspesiens@gmail.com',
     subject: 'partageheure.com, confirmer une transaction',
     content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
         '%s<br><br>' +
@@ -33,9 +33,9 @@ const TransactionController = {
         const userId = parseInt(req.params.userId);
         const transactions = await Transactions.findAll({
             include: [
-                { model: Users, as: 'initiator', attributes: Users.getFewAttributes() },
-                { model: Users, as: 'giver', attributes: Users.getFewAttributes() },
-                { model: Users, as: 'receiver', attributes: Users.getFewAttributes() }
+                {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
             ],
             where: {
                 $or: [
@@ -132,7 +132,7 @@ const TransactionController = {
         transaction.balanceGiver = giverPreviousBalance + transaction.amount;
         transaction.balanceReceiver = receiverPreviousBalance - transaction.amount;
         transaction.confirmDate = new Date();
-        transaction.status = "CONFIRMED";    
+        transaction.status = "CONFIRMED";
         await transaction.save();
     },
     async pendingTransactionOfOffer(req, res) {
@@ -171,9 +171,9 @@ const TransactionController = {
     async _getPendingTransactionForUserId(userId, offerId) {
         return Transactions.findAll({
             include: [
-                { model: Users, as: 'initiator', attributes: Users.getFewAttributes() },
-                { model: Users, as: 'giver', attributes: Users.getFewAttributes() },
-                { model: Users, as: 'receiver', attributes: Users.getFewAttributes() }
+                {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
             ],
             where: {
                 OfferId: offerId,
