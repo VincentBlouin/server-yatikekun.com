@@ -101,7 +101,7 @@ const AuthenticationController = {
         await EmailClient.send(emailContent).then(() => {
             res.sendStatus(200);
         }).catch((error) => {
-            console.log(error);
+            console.log(JSON.stringify(error));
             res.sendStatus(500);
         });
     },
