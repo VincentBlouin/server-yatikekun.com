@@ -51,11 +51,14 @@ const MemberController = {
         });
     },
     async get(req, res) {
-        const memberId = req.params['memberId']
+        const memberUuid = req.params['memberId']
+        if (req.user.status !== 'admin' && req.user.uuid !== memberUuid) {
+            return res.send(401);
+        }
         const member = await Users.findOne({
             attributes: Users.getSafeAttributes(),
             where: {
-                uuid: memberId
+                uuid: memberUuid
             }
         });
         res.send(member);

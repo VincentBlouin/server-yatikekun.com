@@ -91,7 +91,7 @@ router.post(
 
 router.get(
     '/member/:memberId',
-    isAdmin,
+    isAuthenticated,
     MemberController.get
 )
 

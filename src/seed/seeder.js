@@ -14,7 +14,7 @@ const MemberController = require("../controller/MemberController")
 
 module.exports = {
     run: function () {
-        return sequelize.sync({ force: true })
+        return sequelize.sync({force: true})
             .then(() => {
                 return Promise.all(
                     users.map(user => {
@@ -23,14 +23,16 @@ module.exports = {
                         });
                     })
                 )
-            }).then(() => {
+            })
+            .then(() => {
                 return Promise.all(
                     offers.map(offer => {
                         offer.isAvailable = true;
                         return Offers.create(offer)
                     })
                 )
-            }).catch(function (err) {
+            })
+            .catch(function (err) {
                 console.log(err)
             })
     }
