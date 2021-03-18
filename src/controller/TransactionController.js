@@ -74,7 +74,9 @@ const TransactionController = {
             status: "PENDING"
         });
         TransactionController._sendConfirmEmailToUserIdInTransaction(otherUserId, newTransaction);
-        res.sendStatus(200);
+        res.send({
+            transactionId: newTransaction.id
+        })
     },
     async confirm(req, res) {
         const userId = parseInt(req.user.id);
@@ -218,7 +220,6 @@ const TransactionController = {
         }
         EmailClient.addEmailNumber(emailContent, "fr", '068b6faa')
         await EmailClient.send(emailContent);
-        res.sendStatus(200);
     }
 }
 module.exports = TransactionController;

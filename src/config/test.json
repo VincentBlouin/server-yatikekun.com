@@ -1,0 +1,21 @@
+{
+  "useMinify": false,
+  "baseUrl": "http://unit-test.partageheure.com",
+  "db": {
+    "database": "sel-test",
+    "user": "sel-test",
+    "password": "sel-test",
+    "options": {
+      "dialect" : "sqlite",
+      "host": "localhost",
+      "storage": "./yatikekun.sqlite",
+      "logging": false
+    }
+  },
+  "authentication":{
+    "jwtSecret": "65485cb5-9b33-4e3e-9d69-fa19549e2443"
+  },
+  "sendgrid": "mock",
+  "noCompress": true,
+  "port": 5300
+}

@@ -39,7 +39,6 @@ const MemberController = {
             })
         }
         member.uuid = uuid();
-        member.status = "member";
         member.region = "BDC";
         member = await Users.create(
             member
@@ -94,10 +93,10 @@ const MemberController = {
         await Transactions.create({
             amount: 5,
             details: "initial",
-            ReceiverId: memberId,
+            GiverId: memberId,
             confirmDate: new Date(),
             status: "CONFIRMED",
-            balanceReceiver: 5
+            balanceGiver: 5
         });
     }
 };

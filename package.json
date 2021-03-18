@@ -6,7 +6,9 @@
   "scripts": {
     "start": "./node_modules/nodemon/bin/nodemon.js src/app.js --exec 'npm run lint && node'",
     "lint": "./node_modules/.bin/eslint **/*.js",
-    "seed": "NODE_ENV=development node ./src/seed"
+    "seed": "NODE_ENV=development node ./src/seed",
+    "server-test": "mocha src/server-spec --exit --timeout 10000",
+    "test": "npm run server-test"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.4.2",
@@ -33,5 +35,27 @@
     "sharp": "^0.26.3",
     "sprintf-js": "^1.1.2",
     "sqlite3": "^5.0.0"
+  },
+  "devDependencies": {
+    "sinon": "^4.1.2",
+    "jasmine-node": "^1.14.5",
+    "jsdom": "^11.3.0",
+    "chai": "^4.1.2",
+    "chai-string": "^1.4.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^4.0.1",
+    "karma": "^1.7.1",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
+    "karma-coverage": "^1.1.1",
+    "karma-firefox-launcher": "^1.0.1",
+    "karma-mocha": "^1.3.0",
+    "karma-opera-launcher": "^1.0.0",
+    "karma-phantomjs-launcher": "^1.0.4",
+    "karma-requirejs": "^1.1.0",
+    "karma-safari-launcher": "^1.0.0",
+    "phantomjs": "^2.1.7",
+    "pre-commit": "^1.2.2",
+    "nodemailer-mock-transport": "^1.3.0"
   }
 }
