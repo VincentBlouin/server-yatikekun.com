@@ -207,10 +207,12 @@ const TransactionController = {
     }
 }
 TransactionController.recalculate = async function (req, res) {
+    console.log("recalculate all balance")
     const users = await Users.findAll();
     await Promise.all(users.map((user) => {
         return TransactionController._recalculateForUserId(user.id);
     }));
+    console.log("end recalculate all balance")
     res.sendStatus(200);
 };
 
