@@ -3,6 +3,7 @@ const crypto = require('crypto')
 const EmailClient = require('../EmailClient')
 const sprintf = require('sprintf-js').sprintf
 const config = require('../config')
+const Promise = require("bluebird");
 
 const confirmTransactionFr = {
     from: 'horizonsgaspesiens@gmail.com',
@@ -31,24 +32,7 @@ const {
 const TransactionController = {
     async list(req, res) {
         const userId = parseInt(req.params.userId);
-        const transactions = await Transactions.findAll({
-            include: [
-                {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
-                {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
-                {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
-            ],
-            where: {
-                $or: [
-                    {
-                        GiverId: userId
-
-                    },
-                    {
-                        ReceiverId: userId
-                    },
-                ]
-            }
-        });
+        const transactions = await TransactionController._listForUserId(userId);
         res.send(transactions);
     },
     async addTransaction(req, res) {
@@ -222,4 +206,59 @@ const TransactionController = {
         await EmailClient.send(emailContent);
     }
 }
+TransactionController.recalculate = async function (req, res) {
+    const users = await Users.findAll();
+    await Promise.all(users.map((user) => {
+        return TransactionController._recalculateForUserId(user.id);
+    }));
+    res.sendStatus(200);
+};
+
+TransactionController._recalculateForUserId = async function (userId) {
+    const transactions = await TransactionController._listForUserId(userId, true);
+    let balance = 0;
+    return Promise.mapSeries(transactions, (transaction) => {
+        if (transaction.status !== "CONFIRMED") {
+            return Promise.resolve();
+        }
+        let balanceProperty;
+        if (transaction.GiverId === userId) {
+            balance += transaction.amount;
+            balanceProperty = "balanceGiver";
+        } else {
+            balance -= transaction.amount;
+            balanceProperty = "balanceReceiver";
+        }
+        if (transaction[balanceProperty] === balance) {
+            return Promise.resolve();
+        }
+        transaction[balanceProperty] = balance;
+        return transaction.save();
+    });
+}
+
+TransactionController._listForUserId = async function (userId, order) {
+    const options = {
+        include: [
+            {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
+            {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
+            {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
+        ],
+        where: {
+            $or: [
+                {
+                    GiverId: userId
+
+                },
+                {
+                    ReceiverId: userId
+                },
+            ]
+        }
+    };
+    if (order) {
+        options.order = [['createdAt', 'ASC']];
+    }
+    return Transactions.findAll(options);
+};
 module.exports = TransactionController;

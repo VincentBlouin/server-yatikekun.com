@@ -136,4 +136,9 @@ router.get(
     TransactionController.pendingTransactionOfOffer
 )
 
+router.get(
+    '/transaction/recalculate',
+    TransactionController.recalculate
+)
+
 module.exports = router

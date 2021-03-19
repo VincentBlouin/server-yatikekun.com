@@ -2,6 +2,14 @@ const config = require('../config');
 config.setEnvironment('test');
 const {Users, Offers, Transactions} = require('../model');
 const jwt = require('jsonwebtoken');
+const chai = require('chai');
+require('chai').should();
+chai.should();
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
+chai.use(require('chai-string'));
+
+let app = require('../app');
 
 function jwtSignUser(user) {
     const ONE_WEEK = 60 * 60 * 24 * 7;
@@ -35,7 +43,10 @@ TestUtil.getOfferByTitle = function (title) {
     });
 };
 
-TestUtil.listTransactionsForUserId = function (userId) {
+TestUtil.listTransactionsForUserId = function (userId, sortType) {
+    if(!sortType){
+        sortType = "DESC";
+    }
     return Transactions.findAll({
         include: [
             {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
@@ -53,8 +64,23 @@ TestUtil.listTransactionsForUserId = function (userId) {
                 },
             ]
         },
-        order: [['createdAt', 'DESC']]
+        order: [['createdAt', sortType]]
     });
+};
+
+TestUtil.addTransaction = async function (giver, amount, receiverUuid, offerId) {
+    let auth = await TestUtil.signIn(giver.email);
+    let res = await chai.request(app)
+        .post('/api/transaction')
+        .set('Authorization', 'Bearer ' + auth.token)
+        .send({
+            amount: amount,
+            InitiatorId: giver.id,
+            GiverId: giver.id,
+            ReceiverUuid: receiverUuid,
+            OfferId: offerId,
+        });
+    return res.body.transactionId;
 };
 
 module.exports = TestUtil;
