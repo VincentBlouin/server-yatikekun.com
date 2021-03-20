@@ -10,7 +10,7 @@ const resetPasswordEn = {
     subject: 'Change your password',
     content: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.<br><br>' +
         'Please click on the following link, or paste this into your browser to continue the process:<br><br>' +
-        '%s/change-password/%s<br><br>' +
+        '<a href="%s/change-password/%s" target="_blank">%s/change-password/%s</a><br><br>' +
         'If you did not request this, please ignore this email and your password will remain unchanged.<br><br>'
 }
 
@@ -19,7 +19,7 @@ const resetPasswordFr = {
     subject: 'Modifier votre mot de passe',
     content: 'Vous reçevez ce courriel, parce que vous (ou quelqu\'un d\'autre) a demandé la réinitialisation du mot de passe de votre compte.<br><br>' +
         'Cliquez sur le lien suivant, ou coller le dans votre navigateur pour poursuivre le processus:<br><br>' +
-        '%s/change-password/%s<br><br>' +
+        '<a href="%s/change-password/%s" target="_blank">%s/change-password/%s</a><br><br>' +
         'Si vous n\'avez pas fait cette demande, ignorez ce courriel et votre mot de passe demeurera inchangé.<br>'
 }
 const TWO_WEEKS = 1209600000;
@@ -95,7 +95,13 @@ const AuthenticationController = {
             from: EmailClient.buildFrom(emailText.from),
             to: email,
             subject: emailText.subject,
-            html: sprintf(emailText.content, config.getConfig().baseUrl, token)
+            html: sprintf(
+                emailText.content,
+                config.getConfig().baseUrl,
+                token,
+                config.getConfig().baseUrl,
+                token
+            )
         }
         EmailClient.addEmailNumber(emailContent, locale, '7401e739')
         await EmailClient.send(emailContent).then(() => {

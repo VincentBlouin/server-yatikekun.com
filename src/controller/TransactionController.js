@@ -11,7 +11,7 @@ const confirmTransactionFr = {
     content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
         '%s<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
-        '%s/confirm-transaction/%s<br><br>' +
+        '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
         'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
 }
 
@@ -21,7 +21,7 @@ const confirmTransactionEn = {
     content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
         '%s<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
-        '%s/confirm-transaction/%s<br><br>' +
+        '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
         'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
 }
 
@@ -200,7 +200,15 @@ const TransactionController = {
             from: EmailClient.buildFrom(emailText.from),
             to: email,
             subject: emailText.subject,
-            html: sprintf(emailText.content, otherUserFullname, transaction.details, config.getConfig().baseUrl, token)
+            html: sprintf(
+                emailText.content,
+                otherUserFullname,
+                transaction.details,
+                config.getConfig().baseUrl,
+                token,
+                config.getConfig().baseUrl,
+                token
+            )
         }
         EmailClient.addEmailNumber(emailContent, "fr", '068b6faa')
         await EmailClient.send(emailContent);
