@@ -156,8 +156,10 @@ const OfferController = {
         await axios({
             method: "post",
             url: "https://graph.facebook.com/" + config.getConfig().fbGroupId + "/feed",
-            data: bodyFormData,
-            headers: {"Content-Type": "multipart/form-data"}
+            data: {
+                access_token: config.getConfig().fbAccessToken,
+                message: offer.title_fr,
+            }
         });
     }
     // updateProduct(req, res) {
