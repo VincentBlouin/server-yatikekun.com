@@ -136,19 +136,21 @@ const OfferController = {
         res.send(offer);
     },
     async _sendOfferToFacebook(offer) {
-        console.log(config.getConfig().appId);
-        console.log(config.getConfig().fb);
-        const accessResponse = await axios({
-            method: "get",
-            url: "https://graph.facebook.com/oauth/access_token" +
-                "?client_id=" + config.getConfig().appId +
-                "&client_secret=" + config.getConfig().fb +
-                "&grant_type=client_credentials"
-        });
-        console.log(accessResponse.data.access_token);
-        const token = accessResponse.data.access_token;
+        // console.log(config.getConfig().appId);
+        // console.log(config.getConfig().fb);
+        // const accessResponse = await axios({
+        //     method: "get",
+        //     url: "https://graph.facebook.com/oauth/access_token" +
+        //         "?client_id=" + config.getConfig().appId +
+        //         "&client_secret=" + config.getConfig().fb +
+        //         "&grant_type=client_credentials"
+        // });
+        // console.log(accessResponse.data);
+        // console.log(accessResponse.data.access_token);
+        // const token = accessResponse.data.access_token;
+        console.log(config.getConfig().fbAccessToken);
         const bodyFormData = new FormData();
-        bodyFormData.append('access_token', token);
+        bodyFormData.append('access_token', config.getConfig().fbAccessToken);
         bodyFormData.append('message', offer.title_fr);
         console.log("url " + "https://graph.facebook.com/" + config.getConfig().fbGroupId + "/feed")
         await axios({
