@@ -5,8 +5,9 @@ const config = require('../config')
 const uuid = require('uuid')
 const fs = require('fs')
 const sharp = require('sharp');
-
-module.exports = {
+const axios = require('axios');
+const FormData = require('form-data');
+const OfferController = {
     list(req, res) {
         return Offers.findAll({
             include: [{
@@ -99,6 +100,9 @@ module.exports = {
             experience_fr: offer.experience,
             additionalFees_fr: offer.additionalFees
         });
+        OfferController._sendOfferToFacebook(
+            offer
+        );
         res.send(offer);
     },
     async updateOffer(req, res) {
@@ -130,6 +134,29 @@ module.exports = {
             }]
         });
         res.send(offer);
+    },
+    async _sendOfferToFacebook(offer) {
+        console.log(config.getConfig().appId);
+        console.log(config.getConfig().fb);
+        const accessResponse = await axios({
+            method: "get",
+            url: "https://graph.facebook.com/oauth/access_token" +
+                "?client_id=" + config.getConfig().appId +
+                "&client_secret=" + config.getConfig().fb +
+                "&grant_type=client_credentials"
+        });
+        console.log(accessResponse.data.access_token);
+        const token = accessResponse.data.access_token;
+        const bodyFormData = new FormData();
+        bodyFormData.append('access_token', token);
+        bodyFormData.append('message', offer.title_fr);
+        console.log("url " + "https://graph.facebook.com/" + config.getConfig().fbGroupId + "/feed")
+        await axios({
+            method: "post",
+            url: "https://graph.facebook.com/" + config.getConfig().fbGroupId + "/feed",
+            data: bodyFormData,
+            headers: {"Content-Type": "multipart/form-data"}
+        });
     }
     // updateProduct(req, res) {
     //     const product = req.body
@@ -152,7 +179,8 @@ module.exports = {
     //         res.send(product)
     //     })
     // }
-}
+};
+module.exports = OfferController;
 
 function base64_encode(file) {
     // read binary data
