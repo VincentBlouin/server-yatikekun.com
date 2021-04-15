@@ -6,7 +6,6 @@ const uuid = require('uuid')
 const fs = require('fs')
 const sharp = require('sharp');
 const axios = require('axios');
-const FormData = require('form-data');
 const OfferController = {
     list(req, res) {
         return Offers.findAll({
@@ -149,9 +148,6 @@ const OfferController = {
         // console.log(accessResponse.data.access_token);
         // const token = accessResponse.data.access_token;
         console.log(config.getConfig().fbAccessToken);
-        const bodyFormData = new FormData();
-        bodyFormData.append('access_token', config.getConfig().fbAccessToken);
-        bodyFormData.append('message', offer.title_fr);
         console.log("url " + "https://graph.facebook.com/" + config.getConfig().fbGroupId + "/feed")
         await axios({
             method: "post",
