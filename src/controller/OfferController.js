@@ -80,7 +80,7 @@ const OfferController = {
         );
     },
     _sendImageByUuid(uuid, res) {
-        const img = fs.readFileSync(config.getConfig().imageBasePath + '/thumb_' + secureFileName)
+        const img = fs.readFileSync(config.getConfig().imageBasePath + '/thumb_' + uuid)
         res.writeHead(200, {'Content-Type': 'image/jpg'})
         res.end(img, 'binary')
     },
