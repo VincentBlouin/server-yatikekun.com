@@ -77,6 +77,11 @@ router.get(
     OfferController.getImage
 )
 
+router.get(
+    '/offer/:offerId/image',
+    OfferController.getImageByOfferId
+)
+
 router.put(
     '/offer/:offerId',
     isAuthenticated,

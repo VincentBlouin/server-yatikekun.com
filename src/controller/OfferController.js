@@ -74,9 +74,25 @@ const OfferController = {
     },
     getImage(req, res) {
         const secureFileName = req.params['uuid'].split('/').pop()
+        OfferController._sendImageByUuid(
+            secureFileName,
+            res
+        );
+    },
+    _sendImageByUuid(uuid, res) {
         const img = fs.readFileSync(config.getConfig().imageBasePath + '/thumb_' + secureFileName)
         res.writeHead(200, {'Content-Type': 'image/jpg'})
         res.end(img, 'binary')
+    },
+    async getImageByOfferId(req, res) {
+        const offerId = req.params['offerId'];
+        const offer = await Offers.findOne({
+            attributes: ['customImage', 'image'],
+            where: {
+                id: offerId
+            }
+        });
+        res.send(offer);
     },
     // getDetails(req, res) {
     //     const productId = parseInt(req.params['productId'])
@@ -103,7 +119,8 @@ const OfferController = {
             offer
         );
         res.send(offer);
-    },
+    }
+    ,
     async updateOffer(req, res) {
         let offer = req.body;
         offer = await Offers.update({
@@ -120,7 +137,8 @@ const OfferController = {
             }
         });
         res.send(offer);
-    },
+    }
+    ,
     async removeOffer(req, res) {
         const offerId = parseInt(req.params.offerId);
         await Offers.destroy({
@@ -131,7 +149,8 @@ const OfferController = {
             limit: 1
         });
         res.sendStatus(200);
-    },
+    }
+    ,
     async get(req, res) {
         const offerId = req.params['offerId']
         const offer = await Offers.findOne({
@@ -144,7 +163,8 @@ const OfferController = {
             }]
         });
         res.send(offer);
-    },
+    }
+    ,
     async _sendOfferToFacebook(offer) {
         // console.log(config.getConfig().appId);
         // console.log(config.getConfig().fb);
