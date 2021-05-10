@@ -78,6 +78,11 @@ router.get(
 )
 
 router.get(
+    '/offer/:offerId/image/medium',
+    OfferController.getMediumImage
+)
+
+router.get(
     '/offer/:offerId/image',
     OfferController.getImageByOfferId
 )

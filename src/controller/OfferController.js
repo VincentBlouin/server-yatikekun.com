@@ -1,6 +1,7 @@
 const {Offers} = require('../model')
 const {Users} = require('../model')
-const IMAGE_WIDTH = 300
+const THUMB_IMAGE_WIDTH = 300
+const IMAGE_WIDTH = 800
 const config = require('../config')
 const uuid = require('uuid')
 const fs = require('fs')
@@ -57,6 +58,11 @@ const OfferController = {
             }
             sharp(fullSizeImagePath)
                 .resize(IMAGE_WIDTH)
+                .toFile(imageBasePath + '/medium_' + imageInfo.fileName, (err, info) => {
+                    if (err) throw err
+                });
+            sharp(fullSizeImagePath)
+                .resize(THUMB_IMAGE_WIDTH)
                 .toFile(imageBasePath + '/thumb_' + imageInfo.fileName, (err, info) => {
                     if (err) throw err
                     imageInfo.base64 = base64_encode(imageBasePath + '/thumb_' + imageInfo.fileName)
@@ -73,14 +79,21 @@ const OfferController = {
         })
     },
     getImage(req, res) {
-        const secureFileName = req.params['uuid'].split('/').pop()
         OfferController._sendImageByUuid(
-            secureFileName,
+            req.params['uuid'].split('/').pop(),
             res
         );
     },
-    _sendImageByUuid(uuid, res) {
-        const img = fs.readFileSync(config.getConfig().imageBasePath + '/thumb_' + uuid)
+    getMediumImage(req, res) {
+        OfferController._sendImageByUuid(
+            req.params['uuid'].split('/').pop(),
+            res,
+            'medium'
+        );
+    },
+    _sendImageByUuid(uuid, res, size) {
+        size = size || 'thumb';
+        const img = fs.readFileSync(config.getConfig().imageBasePath + '/' + size + '_' + uuid)
         res.writeHead(200, {'Content-Type': 'image/jpg'})
         res.end(img, 'binary')
     },
