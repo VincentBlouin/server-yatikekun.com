@@ -83,6 +83,12 @@ router.put(
     OfferController.updateOffer
 )
 
+router.delete(
+    '/offer/:offerId',
+    isAuthenticated,
+    OfferController.removeOffer
+)
+
 router.get(
     '/member',
     isAuthenticated,

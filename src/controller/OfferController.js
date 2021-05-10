@@ -121,6 +121,17 @@ const OfferController = {
         });
         res.send(offer);
     },
+    async removeOffer(req, res) {
+        const offerId = parseInt(req.params.offerId);
+        await Offers.destroy({
+            where: {
+                id: offerId,
+                UserId: req.user.id
+            },
+            limit: 1
+        });
+        res.sendStatus(200);
+    },
     async get(req, res) {
         const offerId = req.params['offerId']
         const offer = await Offers.findOne({
