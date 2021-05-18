@@ -135,6 +135,12 @@ router.post(
     TransactionController.addTransaction
 )
 
+router.delete(
+    '/transaction/:transactionId',
+    isAdmin,
+    TransactionController.removeTransaction
+)
+
 router.post(
     '/transaction/:transactionId/confirm',
     isAuthenticated,

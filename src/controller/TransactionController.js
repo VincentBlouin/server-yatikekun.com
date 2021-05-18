@@ -224,6 +224,21 @@ TransactionController.recalculate = async function (req, res) {
     res.sendStatus(200);
 };
 
+TransactionController.removeTransaction = async function (req, res) {
+    const transactionId = parseInt(req.params.transactionId);
+    const transaction = await Transactions.findOne({
+        where: {
+            id: transactionId
+        }
+    });
+    const initiatorId = transaction.InitiatorId;
+    const giverId = transaction.GiverId;
+    await transaction.destroy();
+    await TransactionController._recalculateForUserId(initiatorId);
+    await TransactionController._recalculateForUserId(giverId);
+    res.sendStatus(200);
+};
+
 TransactionController._recalculateForUserId = async function (userId) {
     const transactions = await TransactionController._listForUserId(userId, true);
     let balance = 0;
