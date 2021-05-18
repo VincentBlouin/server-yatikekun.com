@@ -25,6 +25,9 @@ const MemberController = {
         res.send(offers);
     },
     async createMember(req, res) {
+        if (req.user.status !== 'admin') {
+            return res.send(401);
+        }
         let member = req.body;
         member.email = member.email.toLowerCase();
         delete member.password;
@@ -67,10 +70,7 @@ const MemberController = {
         if (member.id !== req.user.id && req.user.status !== 'admin') {
             return res.send(403);
         }
-        if (req.user.status !== 'admin') {
-            member.status = "member"
-        }
-        member = await Users.update({
+        const updateInfo = {
             firstname: member.firstname,
             lastname: member.lastname,
             email: member.email,
@@ -79,14 +79,19 @@ const MemberController = {
             phone1: member.phone1,
             phone2: member.phone2,
             gender: member.gender,
-            address: member.address,
-            status: member.status
-        }, {
-            where: {
-                id: member.id,
-                uuid: req.params.uuid
-            }
-        });
+            address: member.address
+        };
+        if (req.user.status === 'admin') {
+            updateInfo.status = member.status;
+        }
+        member = await Users.update(
+            updateInfo,
+            {
+                where: {
+                    id: member.id,
+                    uuid: req.params.uuid
+                }
+            });
         res.send(member);
     },
     async _createInitialTransactionForMemberId(memberId) {

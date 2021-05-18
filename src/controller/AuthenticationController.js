@@ -29,27 +29,29 @@ function jwtSignUser(user) {
 }
 
 const AuthenticationController = {
-    login(req, res) {
-        const {email, password} = req.body
-        if (!password || password.trim() === '' || password === null) {
-            return res.status(403)
-        }
-        let user;
-        return Users.findOne({
-            where: {
-                email: email
+        async login(req, res) {
+            const {email, password} = req.body
+            if (password === undefined || password === null || password.trim() === '') {
+                return res.status(403)
             }
-        }).then(function (_user) {
-            user = _user
-            if (!user || user === null) {
-                return res.status(403).send({
+            let user = await Users.findOne({
+                where: {
+                    email: email
+                }
+            });
+            if (user === undefined || user === null) {
+                return res.send(403, {
                     error: 'Login information is incorrect'
                 })
             }
-            return user.comparePassword(password)
-        }).then(function (isPasswordValid) {
+            if (user.status === "disabled") {
+                return res.send(403, {
+                    error: 'disabled'
+                });
+            }
+            const isPasswordValid = await user.comparePassword(password);
             if (!isPasswordValid) {
-                return res.status(403).send({
+                return res.send(403, {
                     error: 'Login information is incorrect'
                 })
             }
@@ -66,145 +68,131 @@ const AuthenticationController = {
                 },
                 token: jwtSignUser(user.toJSON())
             })
-        }).catch(function (err) {
-            console.log(err)
-            return res.status(500).send({
-                error: 'An error has occured trying to login'
-            })
-        })
-    },
-    async register(req, res) {
-
-        user = await Users.create({
-            firstname: req.body.firstName,
-            lastname: req.body.lastName,
-            email: req.body.email.toLowerCase(),
-            password: req.body.password
-        });
-        const passwordToken = await AuthenticationController._resetPassword(user.email);
-        res.send({
-            passwordToken: passwordToken
-        });
-    },
-    async resetPassword(req, res) {
-        const {email, locale} = req.body
-        const token = await AuthenticationController._resetPassword(email);
-        if (!token) {
-            return res.sendStatus(400);
-        }
-        const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
-        const emailContent = {
-            from: EmailClient.buildFrom(emailText.from),
-            to: email,
-            subject: emailText.subject,
-            html: sprintf(
-                emailText.content,
-                config.getConfig().baseUrl,
-                token,
-                config.getConfig().baseUrl,
-                token
-            )
-        }
-        EmailClient.addEmailNumber(emailContent, locale, '7401e739')
-        await EmailClient.send(emailContent).then(() => {
-            res.sendStatus(200);
-        }).catch((error) => {
-            console.log(JSON.stringify(error));
-            res.sendStatus(500);
-        });
-    },
-    _resetPassword: async function (email) {
-        const token = crypto.randomBytes(32).toString('hex')
-        const user = await Users.findOne({
-            where: {
-                email: email
+        },
+        async resetPassword(req, res) {
+            const {email, locale} = req.body
+            const token = await AuthenticationController._resetPassword(email);
+            if (!token) {
+                return res.sendStatus(400);
             }
-        });
-        if (!user) {
-            return;
-        }
-        user.resetPasswordToken = token;
-        user.resetPasswordExpires = Date.now() + TWO_WEEKS;
-        await user.save();
-        return token;
-    },
-    isTokenValid: function (req, res) {
-        Users.findOne({
-            where: {
-                resetPasswordToken: req.body.token,
-                resetPasswordExpires: {$gt: Date.now()}
+            const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
+            const emailContent = {
+                from: EmailClient.buildFrom(emailText.from),
+                to: email,
+                subject: emailText.subject,
+                html: sprintf(
+                    emailText.content,
+                    config.getConfig().baseUrl,
+                    token,
+                    config.getConfig().baseUrl,
+                    token
+                )
             }
-        }).then(function (user) {
-            return res.sendStatus(
-                user ? 200 : 403
-            )
-        }).catch(function (err) {
-            console.log(err)
-            res.status(500).send({
-                error: 'error'
-            })
-        })
-    },
-    changePassword: function (req, res) {
-        const {token, newPassword} = req.body
-        if (!token) {
-            return res.sendStatus(
-                403
-            )
+            EmailClient.addEmailNumber(emailContent, locale, '7401e739')
+            await EmailClient.send(emailContent).then(() => {
+                res.sendStatus(200);
+            }).catch((error) => {
+                console.log(JSON.stringify(error));
+                res.sendStatus(500);
+            });
         }
-        Users.findOne({
-            where: {
-                resetPasswordToken: token,
-                resetPasswordExpires: {$gt: Date.now()}
-            }
-        }).then(function (user) {
+        ,
+        _resetPassword: async function (email) {
+            const token = crypto.randomBytes(32).toString('hex')
+            const user = await Users.findOne({
+                where: {
+                    email: email
+                }
+            });
             if (!user) {
+                return;
+            }
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = Date.now() + TWO_WEEKS;
+            await user.save();
+            return token;
+        }
+        ,
+        isTokenValid: function (req, res) {
+            Users.findOne({
+                where: {
+                    resetPasswordToken: req.body.token,
+                    resetPasswordExpires: {$gt: Date.now()}
+                }
+            }).then(function (user) {
+                return res.sendStatus(
+                    user ? 200 : 403
+                )
+            }).catch(function (err) {
+                console.log(err)
+                res.status(500).send({
+                    error: 'error'
+                })
+            })
+        }
+        ,
+        changePassword: function (req, res) {
+            const {token, newPassword} = req.body
+            if (!token) {
                 return res.sendStatus(
                     403
                 )
             }
-            user.password = newPassword
-            user.resetPasswordToken = null
-            user.resetPasswordExpires = null
-            return user.save();
-        }).then(function () {
-            return res.sendStatus(
-                200
-            )
-        }).catch(function (err) {
-            console.log(err)
-            res.status(500).send({
-                error: 'error'
-            })
-        })
-    },
-    emailExists: function (req, res) {
-        const {email} = req.body
-        if (!email) {
-            return res.sendStatus(
-                403
-            )
-        }
-        Users.findOne({
-            where: {
-                email: email
-            },
-            attributes: ['email', 'uuid', 'locale', 'firstName', 'lastName']
-        }).then(function (user) {
-            if (!user) {
+            Users.findOne({
+                where: {
+                    resetPasswordToken: token,
+                    resetPasswordExpires: {$gt: Date.now()}
+                }
+            }).then(function (user) {
+                if (!user) {
+                    return res.sendStatus(
+                        403
+                    )
+                }
+                user.password = newPassword
+                user.resetPasswordToken = null
+                user.resetPasswordExpires = null
+                return user.save();
+            }).then(function () {
                 return res.sendStatus(
-                    204
+                    200
+                )
+            }).catch(function (err) {
+                console.log(err)
+                res.status(500).send({
+                    error: 'error'
+                })
+            })
+        }
+        ,
+        emailExists: function (req, res) {
+            const {email} = req.body
+            if (!email) {
+                return res.sendStatus(
+                    403
                 )
             }
-            res.send(
-                user
-            )
-        }).catch(function (err) {
-            console.log(err)
-            res.status(500).send({
-                error: 'error'
+            Users.findOne({
+                where: {
+                    email: email
+                },
+                attributes: ['email', 'uuid', 'locale', 'firstName', 'lastName']
+            }).then(function (user) {
+                if (!user) {
+                    return res.sendStatus(
+                        204
+                    )
+                }
+                res.send(
+                    user
+                )
+            }).catch(function (err) {
+                console.log(err)
+                res.status(500).send({
+                    error: 'error'
+                })
             })
-        })
+        }
     }
-};
+;
 module.exports = AuthenticationController;
