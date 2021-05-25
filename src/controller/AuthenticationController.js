@@ -70,12 +70,12 @@ const AuthenticationController = {
             })
         },
         async facebookLogin(accessToken, refreshToken, profile, done) {
-            console.log("facebook profile " + JSON.stringify(profile._json));
-            const {emails} = profile._json;
+            console.log("facebook profile " + profile);
+            const {email} = profile._json;
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
                 where: {
-                    email: profile.emails[0].value
+                    email: email
                 }
             });
             if (!user) {
