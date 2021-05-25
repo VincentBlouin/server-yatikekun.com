@@ -75,7 +75,7 @@ const AuthenticationController = {
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
                 where: {
-                    email: emails[0]
+                    email: profile.emails[0].value
                 }
             });
             if (!user) {

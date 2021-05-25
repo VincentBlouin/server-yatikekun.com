@@ -31,7 +31,7 @@ if(config.getConfig().appId !== ""){
             clientID: config.getConfig().appId,
             clientSecret: config.getConfig().fb,
             callbackURL: "https://partageheure.com/api/auth/facebook/callback",
-            profileFields: ["emails"]
+            profileFields: ["email"]
         },
         AuthenticationController.facebookLogin
     ));
