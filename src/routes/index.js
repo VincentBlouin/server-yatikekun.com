@@ -1,4 +1,5 @@
 const express = require('express')
+const config = require('../config')
 const router = express.Router()
 const AuthenticationController = require('../controller/AuthenticationController')
 
@@ -22,10 +23,42 @@ const isAdmin = require('../policy/isAdmin')
 //   AuthenticationController.register
 // )
 
+const passport = require('passport')
+
+FacebookStrategy = require('passport-facebook').Strategy;
+if(config.getConfig().appId !== ""){
+    passport.use(new FacebookStrategy({
+            clientID: config.getConfig().appId,
+            clientSecret: config.getConfig().fb,
+            callbackURL: "https://partageheure.com/api/auth/facebook/callback",
+            profileFields: ["email"]
+        },
+        AuthenticationController.facebookLogin
+    ));
+}
+
 router.post(
     '/login',
     AuthenticationController.login
 )
+
+router.get('/auth/facebook', passport.authenticate('facebook'));
+
+router.get('/auth/facebook/success', (req, res) => {
+    res.send("Success");
+});
+
+router.get('/auth/facebook/fail', (req, res) => {
+    res.send("Fail");
+});
+
+router.get(
+    "/auth/facebook/callback",
+    passport.authenticate("facebook", {
+        successRedirect: "/api/auth/facebook/success",
+        failureRedirect: "/api/auth/facebook/fail"
+    })
+);
 
 router.post(
     '/reset-password',

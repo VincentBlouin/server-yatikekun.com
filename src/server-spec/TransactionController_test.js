@@ -105,4 +105,43 @@ describe('TransactionController', () => {
         transactions[2].balanceGiver.should.equal(6.5);
         transactions[2].balanceReceiver.should.equal(3.5);
     });
+    it("calculates correct balance after remove all transactions expect the first one", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        let newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1.25,
+            u2.uuid,
+            offer.id
+        );
+        let auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        auth = await TestUtil.signIn("a@sel.org");
+        await chai.request(app)
+            .delete('/api/transaction/' + newTransactionId)
+            .set('Authorization', 'Bearer ' + auth.token);
+        let u1Transactions = await TestUtil.listTransactionsForUserId(u1.id);
+        let u2Transactions = await TestUtil.listTransactionsForUserId(u2.id);
+        u1Transactions[0].balanceGiver.should.equal(5);
+        u2Transactions[0].balanceGiver.should.equal(5);
+        newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1.25,
+            u2.uuid,
+            offer.id
+        );
+        auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        u1Transactions = await TestUtil.listTransactionsForUserId(u1.id);
+        u2Transactions = await TestUtil.listTransactionsForUserId(u2.id);
+        u1Transactions[0].balanceGiver.should.equal(6.25);
+        u1Transactions[0].balanceReceiver.should.equal(3.75);
+        u2Transactions[0].balanceReceiver.should.equal(3.75);
+        u2Transactions[0].balanceGiver.should.equal(6.25);
+    });
 });

@@ -21,7 +21,7 @@ app.use(bodyParser({limit: '50mb'}))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
-require('./passport')
+require('passport')
 
 const routes = require('./routes/index')
 app.use('/api', routes)
