@@ -42,7 +42,7 @@ router.post(
     AuthenticationController.login
 )
 
-router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['publish_actions', 'user_groups', 'publish_to_groups', 'email'] }));
+router.get('/auth/facebook', passport.authenticate('facebook', { scope: ['publish_to_groups', 'email'] }));
 
 router.get('/auth/facebook/success', (req, res) => {
     res.send("Success");
