@@ -36,7 +36,7 @@ const AuthenticationController = {
             }
             let user = await Users.findOne({
                 where: {
-                    email: email
+                    email: email.trim()
                 }
             });
             if (user === undefined || user === null) {
