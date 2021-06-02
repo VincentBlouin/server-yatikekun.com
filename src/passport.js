@@ -3,6 +3,7 @@ const config = require('./config')
 const passport = require('passport')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
+const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 passport.use(
