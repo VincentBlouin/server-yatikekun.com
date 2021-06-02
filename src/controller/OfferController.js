@@ -7,12 +7,19 @@ const uuid = require('uuid')
 const fs = require('fs')
 const sharp = require('sharp');
 const axios = require('axios');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const OfferController = {
     list(req, res) {
         return Offers.findAll({
             include: [{
                 model: Users,
                 attributes: ['subRegion'],
+                where: {
+                    status: {
+                        [Op.ne]: 'disabled'
+                    }
+                }
             }],
             where: {
                 isAvailable: true
