@@ -56,6 +56,29 @@ const AuthenticationController = {
                     error: 'Login information is incorrect'
                 })
             }
+            AuthenticationController._loginUser(res, user);
+        },
+        async facebookLogin(req, res) {
+            const {userID, accessToken} = req.body;
+            // console.log("url " + 'https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken)
+            const response = await axios.get('https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken);
+            // console.log("fb response " + JSON.stringify(response.data));
+            const email = response.data.email;
+            const user = await Users.findOne({
+                attributes: Users.getSafeAttributes(),
+                where: {
+                    email: email
+                }
+            });
+            if (user) {
+                AuthenticationController._loginUser(res, user);
+            } else {
+                res.send({
+                    success: false
+                });
+            }
+        },
+        _loginUser: function (res, user) {
             res.send({
                 user: {
                     id: user.id,
@@ -69,28 +92,6 @@ const AuthenticationController = {
                 },
                 token: jwtSignUser(user.toJSON())
             })
-        },
-        async facebookLogin(req, res) {
-            const {userID, accessToken} = req.body;
-            console.log("url " + 'https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken)
-            const response = await axios.get('https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken);
-            console.log("fb response " + JSON.stringify(response.data));
-            const email = "proute";
-            const user = await Users.findOne({
-                attributes: Users.getSafeAttributes(),
-                where: {
-                    email: email
-                }
-            });
-            if (user) {
-                res.send({
-                    success: true
-                });
-            } else {
-                res.send({
-                    success: false
-                });
-            }
         },
         async resetPassword(req, res) {
             const {email, locale} = req.body
