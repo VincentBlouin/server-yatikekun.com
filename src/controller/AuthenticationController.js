@@ -69,10 +69,9 @@ const AuthenticationController = {
                 token: jwtSignUser(user.toJSON())
             })
         },
-        async facebookLogin(accessToken, refreshToken, profile, done) {
-            console.log("facebook profile " + JSON.stringify(profile));
-            const {email} = profile._json;
-            console.log("facebook json  " + JSON.stringify(profile._json));
+        async facebookLogin(req, res) {
+            console.log("facebook response " + JSON.stringify(req.body));
+            const {email} = req.body;
             console.log("facebook email " + email);
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
@@ -80,10 +79,15 @@ const AuthenticationController = {
                     email: email
                 }
             });
-            if (!user) {
-                return done();
+            if (user) {
+                res.send({
+                    success: true
+                });
+            } else {
+                res.send({
+                    success: false
+                });
             }
-            done(null, profile);
         },
         async resetPassword(req, res) {
             const {email, locale} = req.body
