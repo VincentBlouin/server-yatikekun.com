@@ -4,6 +4,7 @@ const config = require('../config')
 const crypto = require('crypto')
 const sprintf = require('sprintf-js').sprintf
 const EmailClient = require('../EmailClient')
+const axios = require('axios');
 
 const resetPasswordEn = {
     from: 'horizonsgaspesiens@gmail.com',
@@ -70,13 +71,10 @@ const AuthenticationController = {
             })
         },
         async facebookLogin(req, res) {
-            console.log("facebook response " + JSON.stringify(req.body));
-            const {email} = req.body;
-            console.log("facebook email " + email);
-  //           curl -i -X GET \
-  // "https://graph.facebook.com/{your-user-id}
-  //     ?fields=birthday,email,hometown
-  // &access_token={your-user-access-token}"
+            const {userID, accessToken} = req.body;
+            const response = await axios.get('https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken);
+            console.log(JSON.stringify(response));
+            const email = "proute";
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
                 where: {
