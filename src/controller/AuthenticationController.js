@@ -72,8 +72,9 @@ const AuthenticationController = {
         },
         async facebookLogin(req, res) {
             const {userID, accessToken} = req.body;
+            console.log("url " + 'https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken)
             const response = await axios.get('https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken);
-            console.log(JSON.stringify(response));
+            console.log("fb response " + JSON.stringify(response));
             const email = "proute";
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
