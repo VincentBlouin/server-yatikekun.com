@@ -3,6 +3,7 @@ const config = require('./config')
 const passport = require('passport')
 const JwtStrategy = require('passport-jwt').Strategy
 const ExtractJwt = require('passport-jwt').ExtractJwt
+const Op = Sequelize.Op;
 
 passport.use(
   new JwtStrategy({
@@ -11,7 +12,8 @@ passport.use(
   }, function (jwtPayload, done) {
     return Users.findOne({
       where: {
-        id: jwtPayload.id
+        id: jwtPayload.id,
+        [Op.ne]: 'disabled'
       }
     }).then(function (user) {
       if (user) {
