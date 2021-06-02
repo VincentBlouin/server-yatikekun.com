@@ -65,7 +65,6 @@ const AuthenticationController = {
             // console.log("fb response " + JSON.stringify(response.data));
             const email = response.data.email;
             const user = await Users.findOne({
-                attributes: Users.getSafeAttributes(),
                 where: {
                     email: email
                 }
