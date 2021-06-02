@@ -74,7 +74,7 @@ const AuthenticationController = {
             const {userID, accessToken} = req.body;
             console.log("url " + 'https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken)
             const response = await axios.get('https://graph.facebook.com/' + userID + '?fields=email&access_token=' + accessToken);
-            console.log("fb response " + JSON.stringify(response));
+            console.log("fb response " + response);
             const email = "proute";
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
