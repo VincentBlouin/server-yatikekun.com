@@ -7,25 +7,27 @@ const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 
 passport.use(
-  new JwtStrategy({
-    jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-    secretOrKey: config.getConfig().authentication.jwtSecret
-  }, function (jwtPayload, done) {
-    return Users.findOne({
-      where: {
-        id: jwtPayload.id,
-        [Op.ne]: 'disabled'
-      }
-    }).then(function (user) {
-      if (user) {
-        return done(null, user)
-      } else {
-        return done(new Error(), false)
-      }
-    }).catch(function () {
-      return done(new Error(), false)
+    new JwtStrategy({
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: config.getConfig().authentication.jwtSecret
+    }, function (jwtPayload, done) {
+        return Users.findOne({
+            where: {
+                id: jwtPayload.id,
+                status: {
+                    [Op.ne]: 'disabled'
+                }
+            }
+        }).then(function (user) {
+            if (user) {
+                return done(null, user)
+            } else {
+                return done(new Error(), false)
+            }
+        }).catch(function () {
+            return done(new Error(), false)
+        })
     })
-  })
 )
 
 module.exports = null
