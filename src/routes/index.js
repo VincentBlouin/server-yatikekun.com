@@ -29,6 +29,11 @@ router.post(
 )
 
 router.post(
+    '/login/facebook',
+    AuthenticationController.facebookLogin
+)
+
+router.post(
     '/reset-password',
     AuthenticationController.resetPassword
 )

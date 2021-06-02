@@ -73,6 +73,10 @@ const AuthenticationController = {
             console.log("facebook response " + JSON.stringify(req.body));
             const {email} = req.body;
             console.log("facebook email " + email);
+  //           curl -i -X GET \
+  // "https://graph.facebook.com/{your-user-id}
+  //     ?fields=birthday,email,hometown
+  // &access_token={your-user-access-token}"
             const user = await Users.findOne({
                 attributes: Users.getSafeAttributes(),
                 where: {
