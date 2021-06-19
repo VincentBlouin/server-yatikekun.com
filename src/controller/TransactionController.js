@@ -113,8 +113,8 @@ const TransactionController = {
         res.sendStatus(200);
     },
     async _confirmTransaction(transaction) {
-        const giverPreviousBalance = await TransactionController._getBalanceForUserId(transaction.GiverId);
-        const receiverPreviousBalance = await TransactionController._getBalanceForUserId(transaction.ReceiverId);
+        const giverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.GiverId));
+        const receiverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.ReceiverId));
         transaction.balanceGiver = giverPreviousBalance + transaction.amount;
         transaction.balanceReceiver = receiverPreviousBalance - transaction.amount;
         transaction.confirmDate = new Date();
