@@ -164,6 +164,12 @@ router.get(
 )
 
 router.get(
+    '/transaction/pending/user/:userId',
+    isAuthenticated,
+    TransactionController.getAllPendingOffersOfUser
+)
+
+router.get(
     '/transaction/recalculate',
     TransactionController.recalculate
 )

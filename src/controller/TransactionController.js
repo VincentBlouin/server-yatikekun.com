@@ -133,6 +133,16 @@ const TransactionController = {
         );
         res.send(pendingTransaction);
     },
+    async getAllPendingOffersOfUser(req, res) {
+        const userId = parseInt(req.params['userId']);
+        if (userId !== req.user.id) {
+            return res.send(403);
+        }
+        const pendingTransactions = await TransactionController._getPendingTransactionForUserId(
+            userId
+        );
+        res.send(pendingTransactions);
+    },
     async _getBalanceForUserId(userId) {
         const transactions = await Transactions.findAll({
             limit: 1,
@@ -155,25 +165,28 @@ const TransactionController = {
 
     },
     async _getPendingTransactionForUserId(userId, offerId) {
+        const whereClause = {
+            status: "PENDING",
+            $or: [
+                {
+                    GiverId: userId
+
+                },
+                {
+                    ReceiverId: userId
+                },
+            ]
+        };
+        if (offerId !== undefined) {
+            whereClause.OfferId = offerId;
+        }
         return Transactions.findAll({
             include: [
                 {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
             ],
-            where: {
-                OfferId: offerId,
-                status: "PENDING",
-                $or: [
-                    {
-                        GiverId: userId
-
-                    },
-                    {
-                        ReceiverId: userId
-                    },
-                ]
-            }
+            where: whereClause
         });
     },
     async _sendConfirmEmailToUserIdInTransaction(userId, transaction) {
