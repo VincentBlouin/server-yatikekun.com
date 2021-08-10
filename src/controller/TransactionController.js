@@ -138,8 +138,8 @@ const TransactionController = {
     async _confirmTransaction(transaction) {
         const giverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.GiverId));
         const receiverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.ReceiverId));
-        transaction.balanceGiver = giverPreviousBalance + transaction.amount;
-        transaction.balanceReceiver = receiverPreviousBalance - transaction.amount;
+        transaction.balanceGiver = parseFloat(giverPreviousBalance) + parseFloat(transaction.amount);
+        transaction.balanceReceiver = parseFloat(receiverPreviousBalance) - parseFloat(transaction.amount);
         transaction.confirmDate = new Date();
         transaction.status = "CONFIRMED";
         await transaction.save();
@@ -184,7 +184,7 @@ const TransactionController = {
         });
         const latestConfirmedTransaction = transactions[0];
         return latestConfirmedTransaction.GiverId === userId ?
-            latestConfirmedTransaction.balanceGiver : latestConfirmedTransaction.balanceReceiver;
+            parseFloat(latestConfirmedTransaction.balanceGiver) : parseFloat(latestConfirmedTransaction.balanceReceiver);
 
     },
     async _getPendingTransactionForUserId(userId, offerId) {
