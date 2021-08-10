@@ -76,7 +76,7 @@ TestUtil.addTransaction = async function (giver, amount, receiverUuid, offerId) 
         .send({
             amount: amount,
             InitiatorId: giver.id,
-            GiverId: giver.id,
+            GiverUuid: giver.uuid,
             ReceiverUuid: receiverUuid,
             OfferId: offerId,
         });

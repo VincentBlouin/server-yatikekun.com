@@ -133,6 +133,10 @@ router.get(
     isAuthenticated,
     TransactionController.list
 )
+router.get(
+    '/transaction/recalculate',
+    TransactionController.recalculate
+)
 
 router.get(
     '/transaction/:transactionId',
@@ -173,11 +177,6 @@ router.get(
     '/transaction/pending/user/:userId',
     isAuthenticated,
     TransactionController.getAllPendingOffersOfUser
-)
-
-router.get(
-    '/transaction/recalculate',
-    TransactionController.recalculate
 )
 
 module.exports = router

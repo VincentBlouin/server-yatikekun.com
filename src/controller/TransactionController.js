@@ -45,32 +45,36 @@ const TransactionController = {
                 {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
-                ]
+            ]
         })
         res.send(transaction);
     },
     async addTransaction(req, res) {
-        if (req.user.id !== req.body.InitiatorId) {
+        const initiatorId = parseInt(req.body.InitiatorId);
+        const userId = parseInt(req.user.id);
+        if (userId !== initiatorId) {
             return res.sendStatus(401);
         }
         const giver = await Users.findOne({
             where: {
                 uuid: req.body.GiverUuid
-            }
+            },
+            attributes: ['id']
         });
         const receiver = await Users.findOne({
             where: {
                 uuid: req.body.ReceiverUuid
-            }
+            },
+            attributes: ['id']
         });
-        const otherUserId = req.body.InitiatorId === receiver.id ? giver.id : receiver.id;
-        if (req.user.id === otherUserId) {
+        const otherUserId = initiatorId === receiver.id ? giver.id : receiver.id;
+        if (userId === otherUserId) {
             return res.sendStatus(401);
         }
         const newTransaction = await Transactions.create({
             amount: req.body.amount,
             details: req.body.details,
-            InitiatorId: req.body.InitiatorId,
+            InitiatorId: initiatorId,
             GiverId: giver.id,
             ReceiverId: receiver.id,
             OfferId: req.body.OfferId,

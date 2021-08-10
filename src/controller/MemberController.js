@@ -16,13 +16,13 @@ const MemberController = {
                 "subRegion"
             ])
         }
-        let offers = await Users.findAll({
+        let members = await Users.findAll({
             attributes: attributes,
             order: [
                 ['createdAt', 'DESC']
             ]
         });
-        res.send(offers);
+        res.send(members);
     },
     async createMember(req, res) {
         if (req.user.status !== 'admin') {
