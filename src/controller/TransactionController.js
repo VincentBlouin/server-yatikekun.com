@@ -35,16 +35,35 @@ const TransactionController = {
         const transactions = await TransactionController._listForUserId(userId);
         res.send(transactions);
     },
+    async getOne(req, res) {
+        const transactionId = parseInt(req.params.transactionId);
+        const transaction = await Transactions.findOne({
+            where: {
+                id: transactionId
+            },
+            include: [
+                {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'receiver', attributes: Users.getFewAttributes()}
+                ]
+        })
+        res.send(transaction);
+    },
     async addTransaction(req, res) {
         if (req.user.id !== req.body.InitiatorId) {
             return res.sendStatus(401);
         }
+        const giver = await Users.findOne({
+            where: {
+                uuid: req.body.GiverUuid
+            }
+        });
         const receiver = await Users.findOne({
             where: {
                 uuid: req.body.ReceiverUuid
             }
         });
-        const otherUserId = req.body.InitiatorId === receiver.id ? req.body.GiverId : receiver.id;
+        const otherUserId = req.body.InitiatorId === receiver.id ? giver.id : receiver.id;
         if (req.user.id === otherUserId) {
             return res.sendStatus(401);
         }
@@ -52,7 +71,7 @@ const TransactionController = {
             amount: req.body.amount,
             details: req.body.details,
             InitiatorId: req.body.InitiatorId,
-            GiverId: req.body.GiverId,
+            GiverId: giver.id,
             ReceiverId: receiver.id,
             OfferId: req.body.OfferId,
             status: "PENDING"

@@ -134,6 +134,12 @@ router.get(
     TransactionController.list
 )
 
+router.get(
+    '/transaction/:transactionId',
+    isAuthenticated,
+    TransactionController.getOne
+)
+
 router.post(
     '/transaction',
     isAuthenticated,
