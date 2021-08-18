@@ -5,11 +5,13 @@ const Promise = require('bluebird');
 const {
     sequelize,
     Users,
-    Offers
+    Offers,
+    Organisations,
 } = require('../model')
 
 const users = require('./Users.json')
 const offers = require('./Offers.json')
+const organisations = require('./Organisations.json')
 const MemberController = require("../controller/MemberController")
 
 module.exports = {
@@ -29,6 +31,13 @@ module.exports = {
                     offers.map(offer => {
                         offer.isAvailable = true;
                         return Offers.create(offer)
+                    })
+                )
+            })
+            .then(() => {
+                return Promise.all(
+                    organisations.map(organisation => {
+                        return Organisations.create(organisation)
                     })
                 )
             })

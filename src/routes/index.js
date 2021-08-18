@@ -9,7 +9,7 @@ const AuthenticationControllerPolicy = require('../policy/AuthenticationControll
 const TransactionController = require('../controller/TransactionController')
 const OfferController = require('../controller/OfferController')
 const MemberController = require('../controller/MemberController')
-
+const OrganisationController = require('../controller/OrganisationController')
 const isAuthenticated = require('../policy/isAuthenticated')
 // const isOwnerOrAdmin = require('../policy/isOwnerOrAdmin')
 // const isArdoiseUser = require('../policy/isArdoiseUser')
@@ -126,6 +126,30 @@ router.put(
     '/member/:uuid',
     isAuthenticated,
     MemberController.updateMember
+)
+
+router.get(
+    '/organisation',
+    isAuthenticated,
+    OrganisationController.list
+)
+
+router.get(
+    '/organisation/:organisationId',
+    isAdmin,
+    OrganisationController.get
+)
+
+router.post(
+    '/organisation/image',
+    isAdmin,
+    OrganisationController.uploadImage
+)
+
+router.put(
+    '/organisation/:organisationId',
+    isAdmin,
+    OrganisationController.updateOrganisation
 )
 
 router.get(
