@@ -51,14 +51,15 @@ module.exports = (sequelize, DataTypes) => {
     User.prototype.comparePassword = function (password) {
         return bcrypt.compareAsync(password, this.password)
     }
-    User.defineAssociationsUsingModels = function (model, models) {
-        model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});
-    }
     User.getSafeAttributes = function () {
-        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId", "OrganisationId"]
     };
     User.getFewAttributes = function () {
         return ["uuid", "locale", "firstname", "lastname", "status", "gender"]
+    };
+    User.defineAssociationsUsingModels = function (model, models) {
+        model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});
+        model.belongsTo(models.Organisations)
     };
     return User
 }

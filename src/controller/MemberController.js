@@ -13,7 +13,8 @@ const MemberController = {
                 "email",
                 "status",
                 "locale",
-                "subRegion"
+                "subRegion",
+                "id"
             ])
         }
         let members = await Users.findAll({
@@ -57,8 +58,14 @@ const MemberController = {
         if (req.user.status !== 'admin' && req.user.uuid !== memberUuid) {
             return res.send(401);
         }
+        let attributes = Users.getSafeAttributes();
+        if (req.user.status === 'admin') {
+            attributes = attributes.concat([
+                "AdminUserId"
+            ]);
+        }
         const member = await Users.findOne({
-            attributes: Users.getSafeAttributes(),
+            attributes: attributes,
             where: {
                 uuid: memberUuid
             }
@@ -83,6 +90,10 @@ const MemberController = {
         };
         if (req.user.status === 'admin') {
             updateInfo.status = member.status;
+            console.log("organisation id " + member.OrganisationId);
+            updateInfo.OrganisationId = member.OrganisationId;
+            console.log("admin id " + member.AdminUserId);
+            updateInfo.AdminUserId = member.AdminUserId;
         }
         member = await Users.update(
             updateInfo,
