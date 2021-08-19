@@ -141,6 +141,12 @@ router.get(
 )
 
 router.post(
+    '/organisation',
+    isAdmin,
+    OrganisationController.createOrganisation
+)
+
+router.post(
     '/organisation/image',
     isAdmin,
     OrganisationController.uploadImage

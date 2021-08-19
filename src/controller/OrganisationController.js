@@ -27,6 +27,15 @@ const OrganisationController = {
         });
         res.send(organisation);
     },
+    async createOrganisation(req, res) {
+        let organisation = req.body
+        organisation = await Organisations.create({
+            name: organisation.name,
+            url: organisation.url,
+            customImage: organisation.customImage
+        });
+        res.send(organisation);
+    },
     async updateOrganisation(req, res) {
         let organisation = req.body;
         organisation = await Organisations.update({
