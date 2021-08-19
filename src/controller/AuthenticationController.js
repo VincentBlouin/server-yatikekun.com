@@ -87,7 +87,8 @@ const AuthenticationController = {
                     email: user.email,
                     status: user.status,
                     region: user.region,
-                    subRegion: user.subRegion
+                    subRegion: user.subRegion,
+                    OrganisationId: user.OrganisationId
                 },
                 token: jwtSignUser(user.toJSON())
             })

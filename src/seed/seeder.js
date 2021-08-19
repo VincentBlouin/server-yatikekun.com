@@ -19,6 +19,13 @@ module.exports = {
         return sequelize.sync({force: true})
             .then(() => {
                 return Promise.all(
+                    organisations.map(organisation => {
+                        return Organisations.create(organisation)
+                    })
+                )
+            })
+            .then(() => {
+                return Promise.all(
                     users.map(user => {
                         return Users.create(user).then((newUser) => {
                             return MemberController._createInitialTransactionForMemberId(newUser.id)
@@ -31,13 +38,6 @@ module.exports = {
                     offers.map(offer => {
                         offer.isAvailable = true;
                         return Offers.create(offer)
-                    })
-                )
-            })
-            .then(() => {
-                return Promise.all(
-                    organisations.map(organisation => {
-                        return Organisations.create(organisation)
                     })
                 )
             })
