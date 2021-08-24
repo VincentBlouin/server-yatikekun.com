@@ -86,13 +86,14 @@ const MemberController = {
             phone1: member.phone1,
             phone2: member.phone2,
             gender: member.gender,
-            address: member.address
+            address: member.address,
+            contactByEmail: member.contactByEmail,
+            contactByMessenger: member.contactByMessenger,
+            contactByPhone: member.contactByPhone
         };
         if (req.user.status === 'admin') {
             updateInfo.status = member.status;
-            console.log("organisation id " + member.OrganisationId);
             updateInfo.OrganisationId = member.OrganisationId;
-            console.log("admin id " + member.AdminUserId);
             updateInfo.AdminUserId = member.AdminUserId;
         }
         member = await Users.update(

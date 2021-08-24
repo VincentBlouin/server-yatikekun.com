@@ -37,7 +37,22 @@ module.exports = (sequelize, DataTypes) => {
         resetPasswordExpires: DataTypes.DATE,
         status: DataTypes.STRING,
         locale: DataTypes.STRING,
-        facebookId:DataTypes.STRING
+        facebookId: DataTypes.STRING,
+        contactByEmail: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+        },
+        contactByMessenger: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+        },
+        contactByPhone: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: true
+        }
     }, {
         hooks: {
             beforeCreate: hashPassword,
@@ -52,7 +67,7 @@ module.exports = (sequelize, DataTypes) => {
         return bcrypt.compareAsync(password, this.password)
     }
     User.getSafeAttributes = function () {
-        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId", "OrganisationId"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId", "OrganisationId", "contactByEmail", "contactByMessenger", "contactByPhone"]
     };
     User.getFewAttributes = function () {
         return ["uuid", "locale", "firstname", "lastname", "status", "gender"]
