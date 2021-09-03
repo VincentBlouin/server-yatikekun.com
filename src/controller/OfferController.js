@@ -32,13 +32,16 @@ const OfferController = {
         })
     },
     async listForUser(req, res) {
-        const userId = parseInt(req.params.userId);
-        if (req.user.id !== userId) {
-            return res.sendStatus(401);
-        }
+        const userUuid = req.params['userUuid'];
+        const User = await Users.findOne({
+            attributes: ['id'],
+            where: {
+                uuid: userUuid
+            }
+        });
         const offers = await Offers.findAll({
             where: {
-                UserId: userId
+                UserId: User.id
             },
             order: [
                 ['createdAt', 'DESC']

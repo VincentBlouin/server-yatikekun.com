@@ -72,7 +72,7 @@ router.get(
 )
 
 router.get(
-    '/offer/user/:userId',
+    '/offer/user/:userUuid',
     isAuthenticated,
     OfferController.listForUser
 )
