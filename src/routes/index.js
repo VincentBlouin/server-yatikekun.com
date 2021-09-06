@@ -78,6 +78,12 @@ router.get(
 )
 
 router.get(
+    '/offer/available/user/:userUuid',
+    isAuthenticated,
+    OfferController.listAvailableForUser
+)
+
+router.get(
     '/offer/image/:uuid',
     OfferController.getImage
 )

@@ -33,16 +33,30 @@ const OfferController = {
     },
     async listForUser(req, res) {
         const userUuid = req.params['userUuid'];
+        if (req.user.uuid !== userUuid) {
+            return res.sendStatus(401);
+        }
+        await OfferController.listFilterAvailableOrNotForUser(false, req, res);
+    },
+    async listAvailableForUser(req, res) {
+        await OfferController.listFilterAvailableOrNotForUser(true, req, res);
+    },
+    async listFilterAvailableOrNotForUser(isFilterAvailable, req, res) {
+        const userUuid = req.params['userUuid'];
         const User = await Users.findOne({
             attributes: ['id'],
             where: {
                 uuid: userUuid
             }
         });
+        const whereClause = {
+            UserId: User.id
+        };
+        if (isFilterAvailable) {
+            whereClause.isAvailable = true;
+        }
         const offers = await Offers.findAll({
-            where: {
-                UserId: User.id
-            },
+            where: whereClause,
             order: [
                 ['createdAt', 'DESC']
             ]
