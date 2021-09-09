@@ -73,6 +73,8 @@ const TransactionController = {
         }
         const newTransaction = await Transactions.create({
             amount: req.body.amount,
+            serviceDuration: req.body.serviceDuration,
+            nbParticipants: req.body.nbParticipants,
             details: req.body.details,
             InitiatorId: initiatorId,
             GiverId: giver.id,
