@@ -338,12 +338,12 @@ TransactionController._quantityToFormatted = function (quantity) {
     const hours = Math.floor(quantity);
     let minutes = Math.round((quantity - hours) * 60);
     const isZeroMinutes = minutes === 0;
-    if (isZeroMinutes) {
-        minutes = "00";
-    }
     if (hours === 0 && !isZeroMinutes) {
         return minutes + "m"
     } else {
+        if (minutes < 10) {
+            minutes = "0" + minutes;
+        }
         return hours + "h" + minutes;
     }
 };
