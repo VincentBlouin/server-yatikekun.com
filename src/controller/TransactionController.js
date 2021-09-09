@@ -8,8 +8,9 @@ const Promise = require("bluebird");
 const confirmTransactionFr = {
     from: 'horizonsgaspesiens@gmail.com',
     subject: 'partageheure.com, confirmer une transaction',
-    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
+    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante pour un service que vous avez <b>%s</b>:<br><br>' +
         '%s<br><br>' +
+        'Un montant de %s sera %s à votre compte.<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
         '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
         'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
@@ -18,8 +19,9 @@ const confirmTransactionFr = {
 const confirmTransactionEn = {
     from: 'horizonsgaspesiens@gmail.com',
     subject: 'partageheure.com, confirmer une transaction',
-    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante:<br><br>' +
+    content: 'Vous reçevez ce courriel, parce que %s veut que vous confirmiez la transaction suivante pour un service que vous avez <b>%s</b>:<br><br>' +
         '%s<br><br>' +
+        'Un montant de %s sera %s à votre compte.<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
         '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
         'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
@@ -236,7 +238,9 @@ const TransactionController = {
         const token = crypto.randomBytes(32).toString('hex')
         transaction.confirmToken = token;
         await transaction.save();
-        const emailText = true ? confirmTransactionFr : confirmTransactionEn
+        const emailText = true ? confirmTransactionFr : confirmTransactionEn;
+        const giveReceiveText = transaction.GiverId === userId ? "rendu" : "reçu";
+        const creditDebitText = transaction.GiverId === userId ? "débité" : "crédité";
         const emailContent = {
             from: EmailClient.buildFrom(emailText.from),
             to: email,
@@ -244,7 +248,10 @@ const TransactionController = {
             html: sprintf(
                 emailText.content,
                 otherUserFullname,
+                giveReceiveText,
                 transaction.details,
+                TransactionController._quantityToFormatted(transaction.amount),
+                creditDebitText,
                 config.getConfig().baseUrl,
                 token,
                 config.getConfig().baseUrl,
@@ -326,5 +333,18 @@ TransactionController._listForUserId = async function (userId, order) {
         options.order = [['createdAt', 'ASC']];
     }
     return Transactions.findAll(options);
+};
+TransactionController._quantityToFormatted = function (quantity) {
+    const hours = Math.floor(quantity);
+    let minutes = Math.round((quantity - hours) * 60);
+    const isZeroMinutes = minutes === 0;
+    if (isZeroMinutes) {
+        minutes = "00";
+    }
+    if (hours === 0 && !isZeroMinutes) {
+        return minutes + "m"
+    } else {
+        return hours + "h" + minutes;
+    }
 };
 module.exports = TransactionController;
