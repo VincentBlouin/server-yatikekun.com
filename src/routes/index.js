@@ -199,6 +199,12 @@ router.post(
 )
 
 router.post(
+    '/transaction/:transactionId/refuse',
+    isAuthenticated,
+    TransactionController.refuse
+)
+
+router.post(
     '/transaction/token',
     TransactionController.confirmWithToken
 )

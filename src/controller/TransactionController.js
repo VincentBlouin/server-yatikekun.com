@@ -12,8 +12,9 @@ const confirmTransactionFr = {
         '%s<br><br>' +
         'Un montant de %s sera %s à votre compte.<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
-        '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
-        'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
+        '<a href="%s/transaction/%s/confirm/%s" target="_blank">%s/transaction/%s/confirm/%s</a><br><br>' +
+        'Pour consulter la transaction cliquez sur le lien ci-bas<br><br>' +
+        '<a href="%s/transaction/%s" target="_blank">%s/transaction/%s</a><br><br>'
 }
 
 const confirmTransactionEn = {
@@ -23,8 +24,9 @@ const confirmTransactionEn = {
         '%s<br><br>' +
         'Un montant de %s sera %s à votre compte.<br><br>' +
         'En cliquant le lien plus bas, vous allez confirmer la transaction.<br><br>' +
-        '<a href="%s/confirm-transaction/%s" target="_blank">%s/confirm-transaction/%s</a><br><br>' +
-        'Si vous n\'êtes pas daccord avec cette transaction, vous pouvez toujours ignorer celle-ci et en proposer une autre.<br>'
+        '<a href="%s/transaction/%s/confirm/%s" target="_blank">%s/transaction/%s/confirm/%s</a><br><br>' +
+        'Pour consulter la transaction cliquez sur le lien ci-bas<br><br>' +
+        '<a href="%s/transaction/%s" target="_blank">%s/transaction/%s</a><br><br>'
 }
 
 const {
@@ -139,6 +141,29 @@ const TransactionController = {
         await TransactionController._confirmTransaction(transaction);
         res.sendStatus(200);
     },
+    async refuse(req, res) {
+        const userId = parseInt(req.user.id);
+        const transaction = await Transactions.findOne({
+            where: {
+                id: req.params['transactionId']
+            }
+        });
+        if (!transaction) {
+            return res.sendStatus(404);
+        }
+        if (transaction.GiverId !== userId && transaction.ReceiverId !== userId) {
+            return res.sendStatus(401);
+        }
+        if (transaction.status === "REFUSED") {
+            return res.sendStatus(200);
+        }
+        if (transaction.status !== "PENDING") {
+            return res.sendStatus(400);
+        }
+        transaction.status = "REFUSED";
+        await transaction.save();
+        res.sendStatus(200);
+    },
     async _confirmTransaction(transaction) {
         const giverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.GiverId));
         const receiverPreviousBalance = await TransactionController._getBalanceForUserId(parseInt(transaction.ReceiverId));
@@ -238,8 +263,8 @@ const TransactionController = {
         const token = crypto.randomBytes(32).toString('hex')
         transaction.confirmToken = token;
         await transaction.save();
-        const emailText = true ? confirmTransactionFr : confirmTransactionEn;
         const giveReceiveText = transaction.GiverId === userId ? "rendu" : "reçu";
+        const emailText = true ? confirmTransactionFr : confirmTransactionEn;
         const creditDebitText = transaction.GiverId === userId ? "débité" : "crédité";
         const emailContent = {
             from: EmailClient.buildFrom(emailText.from),
@@ -253,9 +278,15 @@ const TransactionController = {
                 TransactionController._quantityToFormatted(transaction.amount),
                 creditDebitText,
                 config.getConfig().baseUrl,
+                transaction.id,
                 token,
                 config.getConfig().baseUrl,
-                token
+                transaction.id,
+                token,
+                config.getConfig().baseUrl,
+                transaction.id,
+                config.getConfig().baseUrl,
+                transaction.id
             )
         }
         EmailClient.addEmailNumber(emailContent, "fr", '068b6faa')
