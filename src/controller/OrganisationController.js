@@ -32,7 +32,8 @@ const OrganisationController = {
         organisation = await Organisations.create({
             name: organisation.name,
             url: organisation.url,
-            customImage: organisation.customImage
+            customImage: organisation.customImage,
+            activeForTransactions: organisation.activeForTransactions
         });
         res.send(organisation);
     },
@@ -41,7 +42,8 @@ const OrganisationController = {
         organisation = await Organisations.update({
             name: organisation.name,
             url: organisation.url,
-            customImage: organisation.customImage
+            customImage: organisation.customImage,
+            activeForTransactions: organisation.activeForTransactions
         }, {
             where: {
                 id: organisation.id
