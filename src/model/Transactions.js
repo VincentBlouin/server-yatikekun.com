@@ -36,6 +36,48 @@ module.exports = (sequelize, DataTypes) => {
             }
         });
         model.belongsTo(models.Offers);
+
+        model.belongsTo(models.Organisations, {
+            as: 'initiatorOrg',
+            foreignKey: {
+                name: 'InitiatorOrgId'
+            }
+        })
+
+        model.belongsTo(models.Organisations, {
+            as: 'giverOrg',
+            foreignKey: {
+                name: 'GiverOrgId'
+            }
+        })
+
+        model.belongsTo(models.Organisations, {
+            as: 'receiverOrg',
+            foreignKey: {
+                name: 'ReceiverOrgId'
+            }
+        })
+
+        model.belongsTo(models.Organisations, {
+            as: 'giverDonationOrg',
+            foreignKey: {
+                name: 'giverDonationOrgId'
+            }
+        })
+
+        model.belongsTo(models.Organisations, {
+            as: 'receiverDonationOrg',
+            foreignKey: {
+                name: 'receiverDonationOrgId'
+            }
+        })
+
+        model.belongsTo(models.Transactions, {
+            as: "parentTransaction",
+            foreignKey: {
+                name: 'parentTransactionId'
+            }
+        })
     }
 
     return Transactions

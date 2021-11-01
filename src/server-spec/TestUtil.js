@@ -44,7 +44,7 @@ TestUtil.getOfferByTitle = function (title) {
 };
 
 TestUtil.listTransactionsForUserId = function (userId, sortType) {
-    if(!sortType){
+    if (!sortType) {
         sortType = "DESC";
     }
     return Transactions.findAll({
@@ -68,7 +68,7 @@ TestUtil.listTransactionsForUserId = function (userId, sortType) {
     });
 };
 
-TestUtil.addTransaction = async function (giver, amount, receiverUuid, offerId) {
+TestUtil.addTransaction = async function (giver, amount, receiverUuid, offerId, orgId) {
     let auth = await TestUtil.signIn(giver.email);
     let res = await chai.request(app)
         .post('/api/transaction')
@@ -79,6 +79,7 @@ TestUtil.addTransaction = async function (giver, amount, receiverUuid, offerId) 
             GiverUuid: giver.uuid,
             ReceiverUuid: receiverUuid,
             OfferId: offerId,
+            organisationId: orgId
         });
     return res.body.transactionId;
 };

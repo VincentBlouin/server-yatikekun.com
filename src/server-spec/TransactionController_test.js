@@ -144,4 +144,65 @@ describe('TransactionController', () => {
         u2Transactions[0].balanceReceiver.should.equal(3.75);
         u2Transactions[0].balanceGiver.should.equal(6.25);
     });
+    it("creates bonus transaction for org", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        let newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            2
+        );
+        let auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/receiver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        let u2Transactions = await TestUtil.listTransactionsForUserId(u2.id);
+        const orgTransaction = u2Transactions[0];
+        orgTransaction.GiverOrgId.should.equal(1);
+        orgTransaction.amount.should.equal(0.166666667);
+        orgTransaction.parentTransactionId.should.equal(newTransactionId);
+        let u1Transactions = await TestUtil.listTransactionsForUserId(u1.id);
+        const u1OrgTransaction = u1Transactions[0];
+        u1OrgTransaction.GiverOrgId.should.equal(2);
+    });
+
+    it("excludes bonus transactions from balance amount", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        let newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            2
+        );
+        let auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/receiver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+
+        let u1Transactions = await TestUtil.listTransactionsForUserId(u1.id);
+        u1Transactions[0].balanceReceiver.should.equal(6);
+        u1Transactions[0].balanceGiver.should.equal(0.166666667);
+        let u2Transactions = await TestUtil.listTransactionsForUserId(u2.id);
+        u2Transactions[0].balanceReceiver.should.equal(4);
+        u2Transactions[0].balanceGiver.should.equal(0.166666667);
+        await chai.request(app).get('/api/transaction/recalculate');
+        u1Transactions = await TestUtil.listTransactionsForUserId(u1.id);
+        u1Transactions[0].balanceReceiver.should.equal(6);
+        u1Transactions[0].balanceGiver.should.equal(0.166666667);
+        u2Transactions = await TestUtil.listTransactionsForUserId(u2.id);
+        u2Transactions[0].balanceReceiver.should.equal(4);
+        u2Transactions[0].balanceGiver.should.equal(0.166666667);
+    });
 });

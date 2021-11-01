@@ -9,5 +9,8 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: false
         }
     })
+    Organisations.getLightWeightAttributes = function () {
+        return ["id", "name", "url", "activeForTransactions"]
+    };
     return Organisations;
 }

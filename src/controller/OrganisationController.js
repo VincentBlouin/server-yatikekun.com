@@ -15,6 +15,17 @@ const OrganisationController = {
         });
         res.send(organisations);
     },
+    async listActiveForTransactions(req, res) {
+        const organisations = await Organisations.findAll({
+            order: [
+                ['createdAt', 'DESC']
+            ],
+            where: {
+                activeForTransactions: true
+            }
+        });
+        res.send(organisations);
+    },
     async get(req, res) {
         const organisationId = req.params['organisationId']
         if (req.user.status !== 'admin') {

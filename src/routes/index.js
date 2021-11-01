@@ -141,6 +141,12 @@ router.get(
 )
 
 router.get(
+    '/organisation/active-for-transactions',
+    isAuthenticated,
+    OrganisationController.listActiveForTransactions
+)
+
+router.get(
     '/organisation/:organisationId',
     isAdmin,
     OrganisationController.get
@@ -196,6 +202,18 @@ router.post(
     '/transaction/:transactionId/confirm',
     isAuthenticated,
     TransactionController.confirm
+)
+
+router.post(
+    '/transaction/:transactionId/giver-org/:orgId',
+    isAuthenticated,
+    TransactionController.setGiverOrg
+)
+
+router.post(
+    '/transaction/:transactionId/receiver-org/:orgId',
+    isAuthenticated,
+    TransactionController.setReceiverOrg
 )
 
 router.post(
