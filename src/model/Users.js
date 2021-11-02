@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
         locale: DataTypes.STRING,
         facebookId: DataTypes.STRING,
         preferredCommunication: DataTypes.JSONB,
+        language: DataTypes.JSONB,
         contactByEmail: {
             type: DataTypes.BOOLEAN,
             allowNull: false,
@@ -69,10 +70,10 @@ module.exports = (sequelize, DataTypes) => {
         return bcrypt.compareAsync(password, this.password)
     }
     User.getSafeAttributes = function () {
-        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "gender", "address", "createdAt", "facebookId", "OrganisationId", "contactByEmail", "contactByMessenger", "contactByPhone", "pronoun", "preferredCommunication"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "address", "createdAt", "facebookId", "OrganisationId", "contactByEmail", "contactByMessenger", "contactByPhone", "pronoun", "preferredCommunication", "language"]
     };
     User.getFewAttributes = function () {
-        return ["uuid", "locale", "firstname", "lastname", "status", "gender"]
+        return ["uuid", "locale", "firstname", "lastname", "status"]
     };
     User.defineAssociationsUsingModels = function (model, models) {
         model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});

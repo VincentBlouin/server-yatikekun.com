@@ -85,13 +85,13 @@ const MemberController = {
             subRegion: member.subRegion,
             phone1: member.phone1,
             phone2: member.phone2,
-            gender: member.gender,
             pronoun: member.pronoun,
             address: member.address,
             contactByEmail: member.contactByEmail,
             contactByMessenger: member.contactByMessenger,
             contactByPhone: member.contactByPhone,
-            preferredCommunication: member.preferredCommunication
+            preferredCommunication: member.preferredCommunication,
+            language: member.language
         };
         if (req.user.status === 'admin') {
             updateInfo.status = member.status;
