@@ -205,4 +205,35 @@ describe('TransactionController', () => {
         u2Transactions[0].balanceReceiver.should.equal(4);
         u2Transactions[0].balanceGiver.should.equal(0.166666667);
     });
+    it("has correct bonus amount when both entities choose the same org", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        let newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            2
+        );
+        let auth = await TestUtil.signIn(u1.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/giver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/receiver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        auth = await TestUtil.signIn("a@sel.org");
+        let response = await chai.request(app)
+            .get("/api/transaction/org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        let org1Transactions = response.body;
+        org1Transactions.length.should.equal(2);
+        org1Transactions[0].balanceGiver.should.equal(0.166666667);
+        org1Transactions[1].balanceGiver.should.equal(0.333333334);
+    });
 });

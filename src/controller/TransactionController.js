@@ -41,6 +41,11 @@ const TransactionController = {
         const transactions = await TransactionController._listForEntityId(userId);
         res.send(transactions);
     },
+    async listForOrg(req, res) {
+        const orgId = parseInt(req.params.orgId);
+        const transactions = await TransactionController._listForEntityId(orgId, true);
+        res.send(transactions);
+    },
     async getOne(req, res) {
         const transactionId = parseInt(req.params.transactionId);
         const transaction = await Transactions.findOne({
@@ -300,7 +305,8 @@ const TransactionController = {
         }
         const latestConfirmedTransaction = transactions[0];
         // console.log(latestConfirmedTransaction.balanceGiver + " " + latestConfirmedTransaction.balanceReceiver)
-        return latestConfirmedTransaction.GiverId === entityId ?
+        const giverId = isOrg ? latestConfirmedTransaction.GiverOrgId : latestConfirmedTransaction.GiverId;
+        return giverId === entityId ?
             parseFloat(latestConfirmedTransaction.balanceGiver) : parseFloat(latestConfirmedTransaction.balanceReceiver);
 
     },
