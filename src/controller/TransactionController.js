@@ -4,6 +4,8 @@ const EmailClient = require('../EmailClient')
 const sprintf = require('sprintf-js').sprintf
 const config = require('../config')
 const Promise = require("bluebird");
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const TEN_MINUTES_IN_HOURS = 0.166666667;
 
 const confirmTransactionFr = {
@@ -44,6 +46,26 @@ const TransactionController = {
     async listForOrg(req, res) {
         const orgId = parseInt(req.params.orgId);
         const transactions = await TransactionController._listForEntityId(orgId, true);
+        res.send(transactions);
+    },
+    async listAll(req, res) {
+        const transactions = await Transactions.findAll({
+            where: {
+                GiverOrgId: {
+                    [Op.eq]: null
+                },
+                ReceiverOrgId: {
+                    [Op.eq]: null
+                },
+            },
+            include: [
+                {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
+                {model: Users, as: 'receiver', attributes: Users.getFewAttributes()},
+                {model: Organisations, as: 'giverOrg', attributes: Organisations.getLightWeightAttributes()},
+                {model: Organisations, as: 'receiverOrg', attributes: Organisations.getLightWeightAttributes()}
+            ],
+        });
         res.send(transactions);
     },
     async getOne(req, res) {

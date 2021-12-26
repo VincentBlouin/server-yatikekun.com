@@ -177,9 +177,16 @@ router.get(
 )
 router.get(
     '/transaction/org/:orgId',
-    isAuthenticated,
+    isAdmin,
     TransactionController.listForOrg
 )
+
+router.get(
+    '/transaction/all',
+    isAuthenticated,
+    TransactionController.listAll
+)
+
 router.get(
     '/transaction/recalculate',
     TransactionController.recalculate
