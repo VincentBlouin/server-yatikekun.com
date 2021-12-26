@@ -63,26 +63,44 @@ const TransactionController = {
         res.send(transaction);
     },
     async addTransaction(req, res) {
-        const initiatorId = parseInt(req.body.InitiatorId);
+        const initiatorId = req.body.InitiatorId ? parseInt(req.body.InitiatorId) : null;
+        const initiatorOrgId = req.body.InitiatorOrgId ? parseInt(req.body.InitiatorOrgId) : null;
         const userId = parseInt(req.user.id);
-        if (userId !== initiatorId) {
+        const giverOrgId = req.body.GiverOrgId ? parseInt(req.body.GiverOrgId) : null;
+        const receiverOrgId = req.body.ReceiverOrgId ? parseInt(req.body.ReceiverOrgId) : null;
+        const involvesOrg = giverOrgId !== null || receiverOrgId !== null;
+        if (!involvesOrg && userId !== initiatorId) {
             return res.sendStatus(401);
         }
-        const giver = await Users.findOne({
-            where: {
-                uuid: req.body.GiverUuid
-            },
-            attributes: ['id']
-        });
-        const receiver = await Users.findOne({
-            where: {
-                uuid: req.body.ReceiverUuid
-            },
-            attributes: ['id']
-        });
-        const otherUserId = initiatorId === receiver.id ? giver.id : receiver.id;
-        if (userId === otherUserId) {
-            return res.sendStatus(401);
+        let giver;
+        let receiver;
+        if (req.body.GiverUuid) {
+            giver = await Users.findOne({
+                where: {
+                    uuid: req.body.GiverUuid
+                },
+                attributes: ['id']
+            });
+        }
+        if (req.body.ReceiverUuid) {
+            receiver = await Users.findOne({
+                where: {
+                    uuid: req.body.ReceiverUuid
+                },
+                attributes: ['id']
+            });
+        }
+        if (involvesOrg) {
+            if (giverOrgId === receiverOrgId) {
+                return res.sendStatus(401);
+            }
+            if (giverOrgId !== null && receiverOrgId !== null) {
+                return res.sendStatus(401);
+            }
+        } else {
+            if (giver.id === receiver.id) {
+                return res.sendStatus(401);
+            }
         }
         const transaction = {
             amount: req.body.amount,
@@ -90,12 +108,15 @@ const TransactionController = {
             nbParticipants: req.body.nbParticipants,
             details: req.body.details,
             InitiatorId: initiatorId,
-            GiverId: giver.id,
-            ReceiverId: receiver.id,
+            InitiatorOrgId: initiatorOrgId,
+            GiverId: giver ? giver.id : null,
+            GiverOrgId: giverOrgId,
+            ReceiverId: receiver ? receiver.id : null,
+            ReceiverOrgId: receiverOrgId,
             OfferId: req.body.OfferId,
             status: "PENDING"
         };
-        if (req.body.organisationId) {
+        if (!involvesOrg && req.body.organisationId) {
             if (initiatorId === receiver.id) {
                 transaction.receiverDonationOrgId = req.body.organisationId;
             } else {
@@ -103,10 +124,16 @@ const TransactionController = {
             }
         }
         const newTransaction = await Transactions.create(transaction);
-        TransactionController._sendConfirmEmailToUserIdInTransaction(otherUserId, newTransaction);
+        if (involvesOrg) {
+            await TransactionController._confirmTransaction(newTransaction);
+        }
+        if (!involvesOrg) {
+            const otherUserId = initiatorId === receiver.id ? giver.id : receiver.id;
+            TransactionController._sendConfirmEmailToUserIdInTransaction(otherUserId, newTransaction);
+        }
         res.send({
             transactionId: newTransaction.id
-        })
+        });
     },
     async setGiverOrg(req, res) {
         await TransactionController._setOrgId(
@@ -218,8 +245,16 @@ const TransactionController = {
         res.sendStatus(200);
     },
     async _confirmTransaction(transaction) {
-        const giverPreviousBalance = await TransactionController._getBalanceForEntityId(parseInt(transaction.GiverId));
-        const receiverPreviousBalance = await TransactionController._getBalanceForEntityId(parseInt(transaction.ReceiverId));
+        const isGiverAnOrg = transaction.GiverId === null;
+        const giverPreviousBalance = await TransactionController._getBalanceForEntityId(
+            parseInt(isGiverAnOrg ? transaction.GiverOrgId : transaction.GiverId),
+            isGiverAnOrg
+        );
+        const isReceiverAnOrg = transaction.ReceiverId === null;
+        const receiverPreviousBalance = await TransactionController._getBalanceForEntityId(
+            parseInt(isReceiverAnOrg ? transaction.ReceiverOrgId : transaction.ReceiverId),
+            isReceiverAnOrg
+        );
         // console.log(giverPreviousBalance + " " + receiverPreviousBalance);
         transaction.balanceGiver = parseFloat(giverPreviousBalance) + parseFloat(transaction.amount);
         transaction.balanceReceiver = parseFloat(receiverPreviousBalance) - parseFloat(transaction.amount);
