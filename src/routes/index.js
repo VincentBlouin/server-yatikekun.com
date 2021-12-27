@@ -123,6 +123,12 @@ router.post(
 )
 
 router.get(
+    '/member/count',
+    isAdmin,
+    MemberController.getNbMembers
+)
+
+router.get(
     '/member/:memberId',
     isAuthenticated,
     MemberController.get
@@ -190,6 +196,12 @@ router.get(
     '/transaction/toutes',
     isAdmin,
     TransactionController.listAll
+)
+
+router.get(
+    '/transaction/nbTransactionsBetweenMembers',
+    isAdmin,
+    TransactionController.getNbTransactionsBetweenMembers
 )
 
 router.get(

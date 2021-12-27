@@ -108,6 +108,12 @@ const MemberController = {
             });
         res.send(member);
     },
+    async getNbMembers(req, res) {
+        const nbMembers = await Users.count();
+        res.send({
+            'nbMembers': nbMembers
+        });
+    },
     async _createInitialTransactionForMemberId(memberId) {
         await Transactions.create({
             amount: 5,

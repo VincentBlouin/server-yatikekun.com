@@ -76,6 +76,21 @@ const TransactionController = {
         });
         res.send(transactions);
     },
+    async getNbTransactionsBetweenMembers(req, res) {
+        const nbTransactions = await Transactions.count({
+            where: {
+                GiverId: {
+                    [Op.ne]: null
+                },
+                ReceiverId: {
+                    [Op.ne]: null
+                },
+            }
+        });
+        res.send({
+            'nbTransactions': nbTransactions
+        });
+    },
     async getOne(req, res) {
         const transactionId = parseInt(req.params.transactionId);
         const transaction = await Transactions.findOne({
