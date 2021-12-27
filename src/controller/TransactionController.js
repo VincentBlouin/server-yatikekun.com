@@ -481,15 +481,26 @@ TransactionController.recalculate = async function (req, res) {
 
 TransactionController.removeTransaction = async function (req, res) {
     const transactionId = parseInt(req.params.transactionId);
+    const bonusTransactions = await Transactions.findAll({
+        limit: 2,
+        where: {
+            parentTransactionId: transactionId
+        }
+    });
+    await bonusTransactions.map(async (transaction) => {
+        const orgId = transaction.GiverOrgId;
+        await transaction.destroy();
+        await TransactionController._recalculateForEntityId(orgId, true);
+    });
     const transaction = await Transactions.findOne({
         where: {
             id: transactionId
         }
     });
-    const initiatorId = transaction.InitiatorId;
+    const receiverId = transaction.ReceiverId;
     const giverId = transaction.GiverId;
     await transaction.destroy();
-    await TransactionController._recalculateForEntityId(initiatorId);
+    await TransactionController._recalculateForEntityId(receiverId);
     await TransactionController._recalculateForEntityId(giverId);
     res.sendStatus(200);
 };
