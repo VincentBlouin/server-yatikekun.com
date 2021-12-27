@@ -110,8 +110,9 @@ const MemberController = {
     },
     async getNbMembers(req, res) {
         const nbMembers = await Users.count();
+        //remove one member who is the facebook user test
         res.send({
-            'nbMembers': nbMembers
+            'nbMembers': nbMembers - 1
         });
     },
     async _createInitialTransactionForMemberId(memberId) {
