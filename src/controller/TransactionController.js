@@ -91,6 +91,27 @@ const TransactionController = {
             'nbTransactions': nbTransactions
         });
     },
+    async getNbMembersInvolvedInTransactions(req, res) {
+        const transactions = await Transactions.findAll({
+            attributes: ['GiverId', 'ReceiverId'],
+            where: {
+                GiverId: {
+                    [Op.ne]: null
+                },
+                ReceiverId: {
+                    [Op.ne]: null
+                },
+            }
+        });
+        const membersInvolved = new Set();
+        transactions.forEach((transaction) => {
+            membersInvolved.add(transaction.ReceiverId);
+            membersInvolved.add(transaction.GiverId);
+        });
+        res.send({
+            'nbMembersInvolvedInTransactions': membersInvolved.size
+        });
+    },
     async getOne(req, res) {
         const transactionId = parseInt(req.params.transactionId);
         const transaction = await Transactions.findOne({

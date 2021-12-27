@@ -205,6 +205,12 @@ router.get(
 )
 
 router.get(
+    '/transaction/nbMembersInvolvedInTransactions',
+    isAdmin,
+    TransactionController.getNbMembersInvolvedInTransactions
+)
+
+router.get(
     '/transaction/:transactionId',
     isAuthenticated,
     TransactionController.getOne
