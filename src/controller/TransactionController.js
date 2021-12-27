@@ -62,8 +62,16 @@ const TransactionController = {
                 {model: Users, as: 'initiator', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'giver', attributes: Users.getFewAttributes()},
                 {model: Users, as: 'receiver', attributes: Users.getFewAttributes()},
-                {model: Organisations, as: 'giverOrg', attributes: Organisations.getLightWeightAttributes()},
-                {model: Organisations, as: 'receiverOrg', attributes: Organisations.getLightWeightAttributes()}
+                {
+                    model: Organisations,
+                    as: 'giverOrg',
+                    attributes: Organisations.getLightWeightAttributes()
+                },
+                {
+                    model: Organisations,
+                    as: 'receiverOrg',
+                    attributes: Organisations.getLightWeightAttributes()
+                }
             ],
         });
         res.send(transactions);

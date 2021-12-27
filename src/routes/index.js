@@ -182,14 +182,14 @@ router.get(
 )
 
 router.get(
-    '/transaction/all',
-    isAuthenticated,
-    TransactionController.listAll
+    '/transaction/recalculate',
+    TransactionController.recalculate
 )
 
 router.get(
-    '/transaction/recalculate',
-    TransactionController.recalculate
+    '/transaction/toutes',
+    isAdmin,
+    TransactionController.listAll
 )
 
 router.get(
