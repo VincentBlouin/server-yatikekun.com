@@ -514,15 +514,17 @@ TransactionController._recalculateForEntityId = async function (entityId, isOrg)
         if (transaction.status !== "CONFIRMED") {
             return Promise.resolve();
         }
-        if (!isOrg && transaction.parentTransactionId !== null) {
-            return Promise.resolve();
-        }
+        const isBonusTransactionForMember = !isOrg && transaction.parentTransactionId !== null;
         let balanceProperty;
         if (transaction[giverPropertyName] === entityId) {
-            balance += transaction.amount;
+            if (!isBonusTransactionForMember) {
+                balance += transaction.amount;
+            }
             balanceProperty = "balanceGiver";
         } else {
-            balance -= transaction.amount;
+            if (!isBonusTransactionForMember) {
+                balance -= transaction.amount;
+            }
             balanceProperty = "balanceReceiver";
         }
         if (transaction[balanceProperty] === balance) {

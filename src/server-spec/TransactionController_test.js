@@ -2,6 +2,7 @@ const seeder = require("../seed/seeder");
 const TestUtil = require("./TestUtil");
 const chai = require('chai');
 let app = require('../app');
+const TEN_MINUTES_IN_HOURS = 0.166666667;
 const {Transactions} = require('../model');
 
 describe('TransactionController', () => {
@@ -235,5 +236,56 @@ describe('TransactionController', () => {
         org1Transactions.length.should.equal(2);
         org1Transactions[0].balanceGiver.should.equal(0.166666667);
         org1Transactions[1].balanceGiver.should.equal(0.333333334);
+    });
+    it("recalculates balance of bonus transactions correctly", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        const firstTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            2
+        );
+        let auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + firstTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        let newTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            2
+        );
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/receiver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        await chai.request(app)
+            .post('/api/transaction/' + newTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        let response = await chai.request(app)
+            .get("/api/transaction/user/" + u2.id)
+            .set('Authorization', 'Bearer ' + auth.token);
+        let transactions = response.body;
+        transactions.length.should.equal(4);
+        transactions[0].balanceGiver.should.equal(5);
+        transactions[1].balanceReceiver.should.equal(4);
+        transactions[2].balanceReceiver.should.equal(3);
+        transactions[3].balanceReceiver.should.equal(3);
+        auth = await TestUtil.signIn("a@sel.org");
+        await chai.request(app)
+            .delete('/api/transaction/' + firstTransactionId)
+            .set('Authorization', 'Bearer ' + auth.token);
+        auth = await TestUtil.signIn("u2@sel.org");
+        response = await chai.request(app)
+            .get("/api/transaction/user/" + u2.id)
+            .set('Authorization', 'Bearer ' + auth.token);
+        transactions = response.body;
+        transactions.length.should.equal(3);
+        transactions[0].balanceGiver.should.equal(5);
+        transactions[1].balanceReceiver.should.equal(4);
+        transactions[2].balanceReceiver.should.equal(4);
     });
 });
