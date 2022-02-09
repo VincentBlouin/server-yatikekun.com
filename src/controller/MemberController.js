@@ -1,6 +1,8 @@
 const {Users, Transactions} = require('../model')
 const uuid = require('uuid');
 const AuthenticationController = require('./AuthenticationController')
+const TransactionController = require('./TransactionController')
+
 const MemberController = {
     async list(req, res) {
         let attributes = [
@@ -48,6 +50,12 @@ const MemberController = {
             member
         );
         await MemberController._createInitialTransactionForMemberId(member.id);
+        if (member.orgIdGotBonusForSubscription !== null) {
+            await MemberController._applyOrgBonusTransaction(
+                member.id,
+                member.orgIdGotBonusForSubscription
+            );
+        }
         const passwordToken = await AuthenticationController._resetPassword(member.email);
         res.send({
             passwordToken: passwordToken
@@ -91,14 +99,29 @@ const MemberController = {
             contactByMessenger: member.contactByMessenger,
             contactByPhone: member.contactByPhone,
             preferredCommunication: member.preferredCommunication,
-            language: member.language
+            language: member.language,
+            orgIdGotBonusForSubscription: member.orgIdGotBonusForSubscription
         };
         if (req.user.status === 'admin') {
             updateInfo.status = member.status;
             updateInfo.OrganisationId = member.OrganisationId;
             updateInfo.AdminUserId = member.AdminUserId;
+            if (updateInfo.orgIdGotBonusForSubscription !== null && updateInfo.orgIdGotBonusForSubscription !== undefined) {
+                member = await Users.find({
+                    attributes: ['id', 'orgIdGotBonusForSubscription'],
+                    where: {
+                        id: member.id,
+                        uuid: req.params.uuid
+                    }
+                });
+                if (member.orgIdGotBonusForSubscription !== parseInt(updateInfo.orgIdGotBonusForSubscription)) {
+                    await MemberController._applyOrgBonusTransaction(
+                        member.id, updateInfo.orgIdGotBonusForSubscription
+                    );
+                }
+            }
         }
-        member = await Users.update(
+        await Users.update(
             updateInfo,
             {
                 where: {
@@ -106,7 +129,7 @@ const MemberController = {
                     uuid: req.params.uuid
                 }
             });
-        res.send(member);
+        res.sendStatus(200);
     },
     async getNbMembers(req, res) {
         const nbMembers = await Users.count();
@@ -114,6 +137,19 @@ const MemberController = {
         res.send({
             'nbMembers': nbMembers - 1
         });
+    },
+    async _applyOrgBonusTransaction(memberId, orgId) {
+        const newTransaction = await Transactions.create({
+            amount: 1,
+            details: "Inscription d'un nouveau membre",
+            status: "PENDING",
+            InitiatorOrgId: orgId,
+            GiverOrgId: orgId,
+            ReceiverId: memberId,
+            GiverId: null
+        });
+        console.log("giver org id " + newTransaction.GiverOrgId);
+        await TransactionController._confirmTransaction(newTransaction);
     },
     async _createInitialTransactionForMemberId(memberId) {
         await Transactions.create({

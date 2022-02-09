@@ -70,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
         return bcrypt.compareAsync(password, this.password)
     }
     User.getSafeAttributes = function () {
-        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "address", "createdAt", "facebookId", "OrganisationId", "contactByEmail", "contactByMessenger", "contactByPhone", "pronoun", "preferredCommunication", "language"]
+        return ["email", "id", "uuid", "locale", "firstname", "lastname", "status", "region", "subRegion", "subRegion", "phone1", "phone2", "address", "createdAt", "facebookId", "OrganisationId", "contactByEmail", "contactByMessenger", "contactByPhone", "pronoun", "preferredCommunication", "language", "orgIdGotBonusForSubscription"]
     };
     User.getFewAttributes = function () {
         return ["uuid", "locale", "firstname", "lastname", "status"]
@@ -78,6 +78,12 @@ module.exports = (sequelize, DataTypes) => {
     User.defineAssociationsUsingModels = function (model, models) {
         model.belongsTo(models.Users, {foreignKey: 'AdminUserId'});
         model.belongsTo(models.Organisations)
+        model.belongsTo(models.Organisations, {
+            as: 'orgGotBonusForSubscription',
+            foreignKey: {
+                name: 'orgIdGotBonusForSubscription'
+            }
+        })
     };
     return User
 }
