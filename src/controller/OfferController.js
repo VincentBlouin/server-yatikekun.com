@@ -152,9 +152,9 @@ const OfferController = {
             experience_fr: offer.experience,
             additionalFees_fr: offer.additionalFees
         });
-        OfferController._sendOfferToFacebook(
-            offer
-        );
+        // OfferController._sendOfferToFacebook(
+        //     offer
+        // );
         res.send(offer);
     }
     ,
