@@ -54,4 +54,13 @@ describe('MemberController', () => {
         let transaction = org1Transactions[0];
         transaction.status.should.equal("CONFIRMED");
     });
+    xit("lists members of hg not members of partageheure", async () => {
+        const adminUser = await TestUtil.getUserByEmail("a@sel.org");
+        let auth = await TestUtil.signIn(adminUser.email);
+        let response = await chai.request(app)
+            .get("/api/member/members-of-hg-not-of-partageheure")
+            .set('Authorization', 'Bearer ' + auth.token);
+        console.log(response.body);
+        response.status.should.equal(200);
+    });
 });

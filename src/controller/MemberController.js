@@ -2,6 +2,12 @@ const {Users, Transactions} = require('../model')
 const uuid = require('uuid');
 const AuthenticationController = require('./AuthenticationController')
 const TransactionController = require('./TransactionController')
+const config = require("../config")
+const {google} = require('googleapis');
+const GOOGLE_CREDENTIALS_FILE_PATH = config.getConfig().googleCredentialsFilePath;
+const GOOGLE_API_SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly'];
+const EMAIL_ROW_INDEX = 4;
+const DOES_NOT_WANT_MEMBERSHIP_INDEX = 19;
 
 const MemberController = {
     async list(req, res) {
@@ -137,6 +143,46 @@ const MemberController = {
         res.send({
             'nbMembers': nbMembers - 1
         });
+    },
+    async membersOfHgNotOfPartageHeure(req, res) {
+        const usersOfPartageHeure = await Users.findAll({
+            attributes: ['email']
+        });
+        const sheets = MemberController._buildSheetsApi();
+        const membersNotInPartageheure = await new Promise((resolve) => {
+            sheets.spreadsheets.values.get({
+                spreadsheetId: config.getConfig().spreadSheetId,
+                range: 'A2:T',
+            }, (err, sheetsRes) => {
+                if (err) return console.log('The API returned an error: ' + err);
+                const rows = sheetsRes.data.values;
+                const membersNotInPartageheure = rows.filter((row) => {
+                    let email = row[EMAIL_ROW_INDEX];
+                    email = email.trim().toLowerCase();
+                    const wantsToBeMember = row[DOES_NOT_WANT_MEMBERSHIP_INDEX] === undefined || row[DOES_NOT_WANT_MEMBERSHIP_INDEX].trim() !== "oui";
+                    return wantsToBeMember && usersOfPartageHeure.every((user) => {
+                        return user.email !== email;
+                    })
+                }).map((row) => {
+                    let email = row[EMAIL_ROW_INDEX];
+                    email = email.trim().toLowerCase();
+                    return {
+                        firstname: row[1],
+                        lastname: row[2],
+                        email: email
+                    }
+                });
+                resolve(membersNotInPartageheure);
+            });
+        });
+        res.send(membersNotInPartageheure);
+    },
+    _buildSheetsApi: function () {
+        const auth = new google.auth.GoogleAuth({
+            keyFile: GOOGLE_CREDENTIALS_FILE_PATH,
+            scopes: GOOGLE_API_SCOPES,
+        });
+        return google.sheets({version: 'v4', auth});
     },
     async _applyOrgBonusTransaction(memberId, orgId) {
         const newTransaction = await Transactions.create({

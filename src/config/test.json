@@ -1,6 +1,8 @@
 {
   "useMinify": false,
   "baseUrl": "http://unit-test.partageheure.com",
+  "googleCredentialsFilePath": "/home/chenzo/Documents/Site web loco local/membres-google-credentials-local.json",
+  "spreadSheetId": "1m6gKaCgdNRBS3jw1xWzAcwiAL7SLQ2ptsyYOb9AjmCA",
   "db": {
     "database": "sel-test",
     "user": "sel-test",

@@ -129,6 +129,12 @@ router.get(
 )
 
 router.get(
+    '/member/members-of-hg-not-of-partageheure',
+    isAdmin,
+    MemberController.membersOfHgNotOfPartageHeure
+)
+
+router.get(
     '/member/:memberId',
     isAuthenticated,
     MemberController.get
