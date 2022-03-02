@@ -537,7 +537,7 @@ TransactionController._recalculateForEntityId = async function (entityId, isOrg)
             return Promise.resolve();
         }
         const isGiver = transaction[giverPropertyName] === entityId;
-        const isBonusTransactionForMember = transaction.isBonusForOrg && !isOrg;
+        const isBonusTransactionForMember = transaction.GiverOrgId !== null && !isOrg;
         let balanceProperty;
         if (isGiver) {
             if (!isBonusTransactionForMember) {
