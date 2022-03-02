@@ -64,6 +64,7 @@ const MemberController = {
         }
         const passwordToken = await AuthenticationController._resetPassword(member.email);
         res.send({
+            memberId: member.id,
             passwordToken: passwordToken
         });
     },
@@ -185,17 +186,31 @@ const MemberController = {
         return google.sheets({version: 'v4', auth});
     },
     async _applyOrgBonusTransaction(memberId, orgId) {
+        const bonusAmount = 1;
+        const memberBalance = await TransactionController._getBalanceForEntityId(
+            parseInt(memberId),
+            false
+        );
+        const orgPreviousBalance = await TransactionController._getBalanceForEntityId(
+            parseInt(orgId),
+            true
+        );
+        let orgBalance = parseFloat(orgPreviousBalance) + bonusAmount;
         const newTransaction = await Transactions.create({
             amount: 1,
             details: "Inscription d'un nouveau membre",
-            status: "PENDING",
+            status: "CONFIRMED",
+            confirmDate: new Date(),
+            balanceGiver: orgBalance,
+            nbParticipants: 1,
+            serviceDuration: bonusAmount,
+            balanceReceiver: memberBalance,
             InitiatorOrgId: orgId,
             GiverOrgId: orgId,
             ReceiverId: memberId,
             GiverId: null
         });
         console.log("giver org id " + newTransaction.GiverOrgId);
-        await TransactionController._confirmTransaction(newTransaction);
     },
     async _createInitialTransactionForMemberId(memberId) {
         await Transactions.create({

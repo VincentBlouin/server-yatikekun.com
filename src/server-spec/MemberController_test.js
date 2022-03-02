@@ -32,6 +32,28 @@ describe('MemberController', () => {
         transaction.status.should.equal("CONFIRMED");
     });
 
+    it("giving bonus to org does not charge the subscripting member", async () => {
+        const adminUser = await TestUtil.getUserByEmail("a@sel.org");
+        let auth = await TestUtil.signIn(adminUser.email);
+        let response = await chai.request(app)
+            .post('/api/member/')
+            .set('Authorization', 'Bearer ' + auth.token)
+            .send({
+                email: "newuser@partageheure.com",
+                status: "member",
+                orgIdGotBonusForSubscription: 1
+            });
+        auth = await TestUtil.signIn("newuser@partageheure.com");
+        const newMemberId = response.body.memberId;
+        response = await chai.request(app)
+            .get("/api/transaction/user/" + newMemberId)
+            .set('Authorization', 'Bearer ' + auth.token);
+        let newMemberTransactions = response.body;
+        newMemberTransactions.length.should.equal(2);
+        let transaction = newMemberTransactions[1];
+        transaction.balanceReceiver.should.equal(5);
+    });
+
     it("gives bonus to org for updating member", async () => {
         const adminUser = await TestUtil.getUserByEmail("a@sel.org");
         const user = await TestUtil.getUserByEmail("u@sel.org")
@@ -54,7 +76,7 @@ describe('MemberController', () => {
         let transaction = org1Transactions[0];
         transaction.status.should.equal("CONFIRMED");
     });
-    xit("lists members of hg not members of partageheure", async () => {
+    it("lists members of hg not members of partageheure", async () => {
         const adminUser = await TestUtil.getUserByEmail("a@sel.org");
         let auth = await TestUtil.signIn(adminUser.email);
         let response = await chai.request(app)
