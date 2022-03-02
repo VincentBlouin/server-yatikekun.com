@@ -208,7 +208,8 @@ const MemberController = {
             InitiatorOrgId: orgId,
             GiverOrgId: orgId,
             ReceiverId: memberId,
-            GiverId: null
+            GiverId: null,
+            isBonusForOrg: true
         });
         console.log("giver org id " + newTransaction.GiverOrgId);
     },

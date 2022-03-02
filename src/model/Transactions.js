@@ -10,7 +10,12 @@ module.exports = (sequelize, DataTypes) => {
         balanceReceiver: DataTypes.DOUBLE,
         status: DataTypes.STRING,
         confirmDate: DataTypes.DATE,
-        confirmToken: DataTypes.STRING
+        confirmToken: DataTypes.STRING,
+        isBonusForOrg: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false
+        }
     }, {
         indexes: [{
             fields: ['GiverId', 'ReceiverId', 'confirmDate', 'confirmToken']

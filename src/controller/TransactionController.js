@@ -365,7 +365,8 @@ const TransactionController = {
             balanceReceiver: userBalance,
             status: "CONFIRMED",
             confirmDate: new Date(),
-            parentTransactionId: parentTransactionId
+            parentTransactionId: parentTransactionId,
+            isBonusForOrg: true
         };
         await Transactions.create(transaction);
     },
@@ -535,9 +536,10 @@ TransactionController._recalculateForEntityId = async function (entityId, isOrg)
         if (transaction.status !== "CONFIRMED") {
             return Promise.resolve();
         }
-        const isBonusTransactionForMember = !isOrg && transaction.parentTransactionId !== null;
+        const isGiver = transaction[giverPropertyName] === entityId;
+        const isBonusTransactionForMember = transaction.isBonusForOrg && !isOrg;
         let balanceProperty;
-        if (transaction[giverPropertyName] === entityId) {
+        if (isGiver) {
             if (!isBonusTransactionForMember) {
                 balance += transaction.amount;
             }
