@@ -3,12 +3,17 @@ const {Users} = require('../model')
 const THUMB_IMAGE_WIDTH = 300
 const IMAGE_WIDTH = 800
 const config = require('../config')
+const RegionLabel = require('../RegionLabel')
 const uuid = require('uuid')
 const fs = require('fs')
 const sharp = require('sharp');
 const axios = require('axios');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
+const elasticsearch = require("@elastic/elasticsearch")
+const elasticSearch = new elasticsearch.Client({
+    node: config.getConfig().elasticSearchHost,
+})
 const OfferController = {
     list(req, res) {
         return Offers.findAll({
@@ -152,12 +157,35 @@ const OfferController = {
             experience_fr: offer.experience,
             additionalFees_fr: offer.additionalFees
         });
+        OfferController._indexOffer(offer);
         // OfferController._sendOfferToFacebook(
         //     offer
         // );
         res.send(offer);
-    }
-    ,
+    },
+    async search(req, res) {
+        const searchText = req.body.searchText;
+        const offers = await elasticSearch.search({
+            index: "offers",
+            query: {
+                multi_match: {
+                    query: searchText,
+                    fields: ["title_fr", "firstname", "lastname", "subRegion"]
+                }
+            }
+        })
+        res.send(offers);
+    },
+    async indexAllOffers(req, res) {
+        await elasticSearch.indices.delete({
+            index: 'offers',
+        })
+        const offers = await Offers.findAll();
+        await Promise.all(
+            offers.map(OfferController._indexOffer)
+        )
+        res.sendStatus(200);
+    },
     async updateOffer(req, res) {
         let offer = req.body;
         offer = await Offers.update({
@@ -225,28 +253,33 @@ const OfferController = {
                 message: offer.title_fr,
             }
         });
+    },
+    async _indexOffer(offer) {
+        const owner = await Users.findOne({
+            attributes: ['firstname', 'lastname', 'subRegion'],
+            where: {
+                id: offer.UserId
+            }
+        });
+        await elasticSearch.index({
+            index: 'offers',
+            id: offer.id,
+            refresh: true,
+            document: {
+                id: offer.id,
+                title_fr: offer.title_fr,
+                firstname: owner.firstname,
+                lastname: owner.lastname,
+                image: offer.image,
+                customImage: offer.customImage,
+                subRegion: RegionLabel.getForRegion(owner.subRegion),
+                UserId: owner.id,
+                User: {
+                    subRegion: owner.subRegion
+                }
+            }
+        })
     }
-    // updateProduct(req, res) {
-    //     const product = req.body
-    //     if (!product.nbInStock || product.nbInStock === '') {
-    //         product.nbInStock = 0
-    //     }
-    //     return Products.update({
-    //         name: product.name,
-    //         image: product.image,
-    //         format: product.format,
-    //         description: product.description,
-    //         unitPrice: product.unitPrice,
-    //         nbInStock: product.nbInStock,
-    //         isAvailable: product.isAvailable
-    //     }, {
-    //         where: {
-    //             id: product.id
-    //         }
-    //     }).then(function (product) {
-    //         res.send(product)
-    //     })
-    // }
 };
 module.exports = OfferController;
 

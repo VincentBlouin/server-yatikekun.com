@@ -98,6 +98,17 @@ router.get(
     OfferController.getImageByOfferId
 )
 
+router.post(
+    '/offer/search',
+    isAuthenticated,
+    OfferController.search
+)
+
+router.get(
+    '/offer/search/indexAll',
+    OfferController.indexAllOffers
+)
+
 router.put(
     '/offer/:offerId',
     isAuthenticated,
@@ -109,6 +120,7 @@ router.delete(
     isAuthenticated,
     OfferController.removeOffer
 )
+
 
 router.get(
     '/member',
