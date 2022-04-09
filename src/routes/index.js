@@ -48,7 +48,7 @@ router.post(
 )
 
 router.get(
-    '/offer',
+    '/offer/offset/:offset',
     isAuthenticated,
     OfferController.list
 )

@@ -15,8 +15,9 @@ const elasticSearch = new elasticsearch.Client({
     node: config.getConfig().elasticSearchHost,
 })
 const OfferController = {
-    list(req, res) {
-        return Offers.findAll({
+    async list(req, res) {
+        const offset = parseInt(req.params.offset);
+        const offers = await Offers.findAll({
             include: [{
                 model: Users,
                 attributes: ['subRegion'],
@@ -31,10 +32,11 @@ const OfferController = {
             },
             order: [
                 ['createdAt', 'DESC']
-            ]
-        }).then((offers) => {
-            res.send(offers);
+            ],
+            offset:offset,
+            limit: 9
         })
+        res.send(offers);
     },
     async listForUser(req, res) {
         const userUuid = req.params['userUuid'];
@@ -257,7 +259,7 @@ const OfferController = {
         });
     },
     async _indexOffer(offer) {
-        if(!offer.isAvailable){
+        if (!offer.isAvailable) {
             return elasticSearch.delete({
                 index: 'offers',
                 id: offer.id,
