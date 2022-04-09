@@ -188,7 +188,7 @@ const OfferController = {
     },
     async updateOffer(req, res) {
         let offer = req.body;
-        offer = await Offers.update({
+        await Offers.update({
             title_fr: offer.description,
             image: offer.image ? offer.image.name : null,
             customImage: offer.customImage,
@@ -201,6 +201,8 @@ const OfferController = {
                 UserId: req.user.id
             }
         });
+        offer = await Offers.findById(offer.id);
+        OfferController._indexOffer(offer);
         res.send(offer);
     }
     ,
@@ -255,6 +257,12 @@ const OfferController = {
         });
     },
     async _indexOffer(offer) {
+        if(!offer.isAvailable){
+            return elasticSearch.delete({
+                index: 'offers',
+                id: offer.id,
+            })
+        }
         const owner = await Users.findOne({
             attributes: ['firstname', 'lastname', 'subRegion'],
             where: {
