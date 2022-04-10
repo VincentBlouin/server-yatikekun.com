@@ -187,9 +187,14 @@ const OfferController = {
         res.send(offers);
     },
     async indexAllOffers(req, res) {
-        await elasticSearch.indices.delete({
-            index: 'offers',
+        const indexExists = await elasticSearch.indices.exists({
+            index: 'offers'
         })
+        if (indexExists === true) {
+            await elasticSearch.indices.delete({
+                index: 'offers',
+            })
+        }
         const offers = await Offers.findAll();
         await Promise.all(
             offers.map(OfferController._indexOffer)
