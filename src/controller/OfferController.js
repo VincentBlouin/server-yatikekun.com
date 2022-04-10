@@ -11,8 +11,16 @@ const axios = require('axios');
 const Sequelize = require('sequelize');
 const Op = Sequelize.Op;
 const elasticsearch = require("@elastic/elasticsearch")
+const elasticSearchConfig = config.getConfig().elasticSearch;
 const elasticSearch = new elasticsearch.Client({
-    node: config.getConfig().elasticSearchHost,
+    node: elasticSearchConfig.host,
+    auth: {
+        username: elasticSearchConfig.username,
+        password: elasticSearchConfig.password
+    },
+    tls: {
+        rejectUnauthorized: false
+    }
 })
 const OfferController = {
     async list(req, res) {
@@ -33,7 +41,7 @@ const OfferController = {
             order: [
                 ['createdAt', 'DESC']
             ],
-            offset:offset,
+            offset: offset,
             limit: 9
         })
         res.send(offers);
