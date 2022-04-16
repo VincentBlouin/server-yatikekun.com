@@ -233,9 +233,10 @@ const TransactionController = {
         if (transaction.status !== "PENDING" && transaction[donationIdProp] !== null) {
             return res.sendStatus(400);
         }
+        const previousOrgId = transaction[donationIdProp];
         transaction[donationIdProp] = req.params['orgId'];
         await transaction.save();
-        if (transaction.status === "CONFIRMED" && transaction[donationIdProp] === null) {
+        if (transaction.status === "CONFIRMED" && previousOrgId === null) {
             const previousBalance = await TransactionController._getBalanceForEntityId(
                 transaction[userIdProp],
                 false

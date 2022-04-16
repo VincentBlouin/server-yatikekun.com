@@ -288,4 +288,38 @@ describe('TransactionController', () => {
         transactions[1].balanceReceiver.should.equal(4);
         transactions[2].balanceReceiver.should.equal(4);
     });
+    it("can claim org donation after transaction is confirmed", async () => {
+        const u1 = await TestUtil.getUserByEmail("u@sel.org");
+        const u2 = await TestUtil.getUserByEmail("u2@sel.org");
+        const offer = await TestUtil.getOfferByTitle("Animation de groupe")
+        const firstTransactionId = await TestUtil.addTransaction(
+            u1,
+            1,
+            u2.uuid,
+            offer.id,
+            null
+        );
+        let auth = await TestUtil.signIn(u2.email);
+        await chai.request(app)
+            .post('/api/transaction/' + firstTransactionId + "/confirm")
+            .set('Authorization', 'Bearer ' + auth.token);
+        auth = await TestUtil.signIn(u1.email);
+        let response = await chai.request(app)
+            .get("/api/transaction/user/" + u1.id)
+            .set('Authorization', 'Bearer ' + auth.token);
+        let transactions = response.body;
+        transactions.length.should.equal(2);
+        transactions[1].balanceGiver.should.equal(6)
+        console.log(transactions)
+        await chai.request(app)
+            .post('/api/transaction/' + firstTransactionId + "/giver-org/1")
+            .set('Authorization', 'Bearer ' + auth.token);
+        response = await chai.request(app)
+            .get("/api/transaction/user/" + u1.id)
+            .set('Authorization', 'Bearer ' + auth.token);
+        transactions = response.body;
+        transactions.length.should.equal(3);
+        transactions[2].balanceReceiver.should.equal(6)
+
+    });
 });
