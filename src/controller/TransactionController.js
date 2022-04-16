@@ -205,19 +205,19 @@ const TransactionController = {
         await TransactionController._setOrgId(
             req,
             res,
-            'GiverId',
-            'giverDonationOrgId'
+            true
         )
     },
     async setReceiverOrg(req, res) {
         await TransactionController._setOrgId(
             req,
             res,
-            'ReceiverId',
-            'receiverDonationOrgId'
+            false
         )
     },
-    async _setOrgId(req, res, userIdProp, donationIdProp) {
+    async _setOrgId(req, res, isGiver) {
+        const userIdProp = isGiver ? 'GiverId' : 'ReceiverId';
+        const donationIdProp = isGiver ? 'giverDonationOrgId' : 'receiverDonationOrgId';
         const transaction = await Transactions.findOne({
             where: {
                 id: req.params['transactionId']
@@ -230,11 +230,25 @@ const TransactionController = {
         if (transaction[userIdProp] !== userId) {
             return res.sendStatus(401);
         }
-        if (transaction.status !== "PENDING") {
+        if (transaction.status !== "PENDING" && transaction[donationIdProp] !== null) {
             return res.sendStatus(400);
         }
         transaction[donationIdProp] = req.params['orgId'];
         await transaction.save();
+        if (transaction.status === "CONFIRMED" && transaction[donationIdProp] === null) {
+            const previousBalance = await TransactionController._getBalanceForEntityId(
+                transaction[userIdProp],
+                false
+            );
+            const bonusAmount = transaction.amount * TEN_MINUTES_IN_HOURS;
+            await TransactionController._createBonusTransactionWithUserAndOrg(
+                transaction[userIdProp],
+                transaction[donationIdProp],
+                bonusAmount,
+                transaction.id,
+                previousBalance
+            )
+        }
         res.sendStatus(200);
     },
     async confirm(req, res) {
