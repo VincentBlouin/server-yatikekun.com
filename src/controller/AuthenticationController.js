@@ -37,7 +37,7 @@ const AuthenticationController = {
             }
             let user = await Users.findOne({
                 where: {
-                    email: email.trim()
+                    email: email.toLowerCase().trim()
                 }
             });
             if (user === undefined || user === null) {
@@ -66,7 +66,7 @@ const AuthenticationController = {
             const email = response.data.email;
             const user = await Users.findOne({
                 where: {
-                    email: email
+                    email: email.toLowerCase()
                 }
             });
             if (user) {
@@ -84,7 +84,7 @@ const AuthenticationController = {
                     uuid: user.uuid,
                     firstname: user.firstname,
                     lastname: user.lastname,
-                    email: user.email,
+                    email: user.email.toLowerCase(),
                     status: user.status,
                     region: user.region,
                     subRegion: user.subRegion,
@@ -95,14 +95,14 @@ const AuthenticationController = {
         },
         async resetPassword(req, res) {
             const {email, locale} = req.body
-            const token = await AuthenticationController._resetPassword(email);
+            const token = await AuthenticationController._resetPassword(email.toLowerCase());
             if (!token) {
                 return res.sendStatus(400);
             }
             const emailText = locale === 'fr' ? resetPasswordFr : resetPasswordEn
             const emailContent = {
                 from: EmailClient.buildFrom(emailText.from),
-                to: email,
+                to: email.toLowerCase(),
                 subject: emailText.subject,
                 html: sprintf(
                     emailText.content,
@@ -125,7 +125,7 @@ const AuthenticationController = {
             const token = crypto.randomBytes(32).toString('hex')
             const user = await Users.findOne({
                 where: {
-                    email: email
+                    email: email.toLowerCase()
                 }
             });
             if (!user) {
@@ -198,7 +198,7 @@ const AuthenticationController = {
             }
             Users.findOne({
                 where: {
-                    email: email
+                    email: email.toLowerCase()
                 },
                 attributes: ['email', 'uuid', 'locale', 'firstName', 'lastName']
             }).then(function (user) {
