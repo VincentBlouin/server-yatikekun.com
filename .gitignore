@@ -1,5 +1,6 @@
 node_modules
 yatikekun.sqlite
+yatikekun.sqlite-journal
 .idea
 src/config/development.json
 /src/config/development.json
