@@ -2,7 +2,8 @@
   {
     "title_fr": "Correction et aide à la rédaction de textes en français",
     "image": "guitar",
-    "UserId": "3"
+    "UserId": "3",
+    "isAvailable": false
   },
   {
     "title_fr": "Aide au déménagement d'électroménager et autres fournitures",

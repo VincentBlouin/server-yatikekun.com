@@ -288,10 +288,16 @@ const OfferController = {
     },
     async _indexOffer(offer) {
         if (!offer.isAvailable) {
-            return elasticSearch.delete({
+            const exists = await elasticSearch.exists({
                 index: 'offers',
                 id: offer.id,
             })
+            if (exists.body) {
+                return elasticSearch.delete({
+                    index: 'offers',
+                    id: offer.id,
+                })
+            }
         }
         const owner = await Users.findOne({
             attributes: ['firstname', 'lastname', 'subRegion'],
