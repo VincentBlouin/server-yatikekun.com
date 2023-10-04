@@ -182,7 +182,8 @@ const OfferController = {
                     must: {
                         multi_match: {
                             query: searchText,
-                            fields: ["title_fr", "firstname", "lastname", "subRegion"]
+                            fields: ["title_fr", "firstname", "lastname", "subRegion"],
+                            fuzziness: 'AUTO'
                         }
                     },
                     filter: [{
