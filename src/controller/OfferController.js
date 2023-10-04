@@ -195,6 +195,9 @@ const OfferController = {
                 index: 'offers',
             })
         }
+        await elasticSearch.indices.create({
+            index: 'offers'
+        })
         await elasticSearch.indices.putMapping({
             index: 'offers',
             body: {
