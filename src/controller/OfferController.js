@@ -201,6 +201,7 @@ const OfferController = {
         await elasticSearch.indices.putMapping({
             index: 'offers',
             body: {
+                "dynamic": true,
                 properties: {
                     customImage: {
                         type: 'object',
@@ -298,7 +299,7 @@ const OfferController = {
                 id: offer.UserId
             }
         });
-        console.log("start indexing " + offer.title_fr)
+        console.log("start indexing " + offer.id + " " + offer.title_fr)
         await elasticSearch.index({
             index: 'offers',
             id: offer.id,
@@ -317,7 +318,7 @@ const OfferController = {
                 }
             }
         })
-        console.log("done indexing " + offer.title_fr)
+        console.log("done indexing " + offer.id + " " + offer.title_fr)
     }
 };
 module.exports = OfferController;
