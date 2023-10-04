@@ -195,23 +195,24 @@ const OfferController = {
                 index: 'offers',
             })
         }
-        await elasticSearch.indices.create({
-            index: 'offers'
-        })
-        await elasticSearch.indices.putMapping({
-            index: 'offers',
-            body: {
-                properties: {
-                    customImage: {
-                        type: 'object',
-                        enabled: false
-                    }
-                }
-            }
-        })
         const offers = await Offers.findAll();
+        let indexCreated = false;
         for (const offer of offers) {
             await OfferController._indexOffer(offer)
+            if(!indexCreated){
+                await elasticSearch.indices.putMapping({
+                    index: 'offers',
+                    body: {
+                        properties: {
+                            customImage: {
+                                type: 'object',
+                                enabled: false
+                            }
+                        }
+                    }
+                })
+            }
+            indexCreated = false;
         }
         res.sendStatus(200);
     },
