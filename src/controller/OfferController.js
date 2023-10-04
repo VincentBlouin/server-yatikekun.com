@@ -298,6 +298,7 @@ const OfferController = {
                 id: offer.UserId
             }
         });
+        console.log("start indexing " + offer.title_fr)
         await elasticSearch.index({
             index: 'offers',
             id: offer.id,
@@ -316,6 +317,7 @@ const OfferController = {
                 }
             }
         })
+        console.log("done indexing " + offer.title_fr)
     }
 };
 module.exports = OfferController;
