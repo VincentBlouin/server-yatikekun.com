@@ -195,6 +195,17 @@ const OfferController = {
                 index: 'offers',
             })
         }
+        await elasticSearch.indices.putMapping({
+            index: 'offers',
+            body: {
+                properties: {
+                    customImage: {
+                        type: 'object',
+                        enabled: false
+                    }
+                }
+            }
+        })
         const offers = await Offers.findAll();
         await Promise.all(
             offers.map(OfferController._indexOffer)
