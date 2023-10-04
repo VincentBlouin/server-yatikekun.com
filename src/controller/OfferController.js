@@ -212,7 +212,7 @@ const OfferController = {
                     }
                 })
             }
-            indexCreated = false;
+            indexCreated = true;
         }
         res.sendStatus(200);
     },
