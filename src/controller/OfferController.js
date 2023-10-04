@@ -178,9 +178,18 @@ const OfferController = {
         const offers = await elasticSearch.search({
             index: "offers",
             query: {
-                multi_match: {
-                    query: searchText,
-                    fields: ["title_fr", "firstname", "lastname", "subRegion"]
+                bool: {
+                    must: {
+                        multi_match: {
+                            query: searchText,
+                            fields: ["title_fr", "firstname", "lastname", "subRegion"]
+                        }
+                    },
+                    filter: [{
+                        term: {
+                            isAvailable: true
+                        }
+                    }]
                 }
             }
         })
@@ -202,6 +211,9 @@ const OfferController = {
             index: 'offers',
             body: {
                 "dynamic": true,
+                "_routing": {
+                    "required": false
+                },
                 properties: {
                     customImage: {
                         type: 'object',
@@ -287,18 +299,6 @@ const OfferController = {
         });
     },
     async _indexOffer(offer) {
-        if (!offer.isAvailable) {
-            const exists = await elasticSearch.exists({
-                index: 'offers',
-                id: offer.id
-            })
-            if (exists) {
-                return elasticSearch.delete({
-                    index: 'offers',
-                    id: offer.id,
-                })
-            }
-        }
         const owner = await Users.findOne({
             attributes: ['firstname', 'lastname', 'subRegion'],
             where: {
@@ -316,6 +316,7 @@ const OfferController = {
                 firstname: owner.firstname,
                 lastname: owner.lastname,
                 image: offer.image,
+                isAvailable: offer.isAvailable,
                 customImage: offer.customImage,
                 subRegion: RegionLabel.getForRegion(owner.subRegion),
                 UserId: owner.id,
