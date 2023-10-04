@@ -290,9 +290,9 @@ const OfferController = {
         if (!offer.isAvailable) {
             const exists = await elasticSearch.exists({
                 index: 'offers',
-                id: offer.id,
+                id: offer.id
             })
-            if (exists.body) {
+            if (exists) {
                 return elasticSearch.delete({
                     index: 'offers',
                     id: offer.id,

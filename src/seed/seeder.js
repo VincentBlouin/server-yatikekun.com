@@ -36,7 +36,9 @@ module.exports = {
             .then(() => {
                 return Promise.all(
                     offers.map(offer => {
-                        offer.isAvailable = true;
+                        if(offer.isAvailable !== false){
+                            offer.isAvailable = true;
+                        }
                         return Offers.create(offer)
                     })
                 )
