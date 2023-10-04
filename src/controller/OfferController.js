@@ -210,9 +210,9 @@ const OfferController = {
             }
         })
         const offers = await Offers.findAll();
-        await Promise.all(
-            offers.map(OfferController._indexOffer)
-        )
+        for (const offer of offers) {
+            await OfferController._indexOffer(offer)
+        }
         res.sendStatus(200);
     },
     async updateOffer(req, res) {
