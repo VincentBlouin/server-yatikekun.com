@@ -206,7 +206,7 @@ const OfferController = {
                         properties: {
                             customImage: {
                                 type: 'object',
-                                enabled: false
+                                index: false
                             }
                         }
                     }
